@@ -1,5 +1,7 @@
 ### Valgene CLI
 
+[![Pub](https://img.shields.io/pub/v/valgene_cli.svg)](https://pub.dartlang.org/packages/valgene_cli)
+
 ## Introduction
 
 assuming you are providing some RESTful/Web APIs, then you are familiar with the tasks of 
@@ -14,33 +16,72 @@ manual and error prone.
 
 This is where Valgene kicks in and reduces a lot of pain.
 
-## An Example
+## Usage
 
 Valgene (Validation Generator) generates validator and Dto boiler plate code from 
  your [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md) specs.
 
-so lets assume you have an API spec like the following that defines 2 endpoints for listing and writing products:
+# Given
+ 
+so lets assume you have an API spec [like the following](https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v3.0/petstore-expanded.yaml) 
+that defines 1 endpoint that accepts incoming data, that is `[POST] /pets`.
 ```yaml
-
-
+paths:
+  /pets:
+    post:
+      description: Creates a new pet in the store.  Duplicates are allowed
+      operationId: addPet
+      requestBody:
+        description: Pet to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPet'
 ```
+
+The payload of the endpoint is expected to be like:
+```yaml
+NewPet:
+  required:
+    - name  
+  properties:
+    name:
+      type: string
+    tag:
+      type: string    
+```
+
+# When
+
+when invoking valgene  
+```bash
+valgene --lang php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\\My\\PetStore\\Api'
+```
+
+# Then
+
+it will generate a Validator, Dto and some Exception classes:
 
 ```bash
-valgen --lang php5.5 --spec openapi.spec.yaml --option 'phpNamespace:\\My\\App\\Validator'
-
-> processing openapi.spec.yaml:
-  - route [GET]     /products
-  - route [POST]    /products
+valgene --lang php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\\My\\PetStore\\Api'
+> processing petstore-expanded.yaml:
+  - route [POST]    /pets
 > generating validator:
-  - GetProductsApi\ValidatorBase.php
-  - PostProductsApi\ValidatorBase.php
+  - PostPets\Valgene\ValidatorBase.php
+> generating dto:
+  - PostPets\Valgene\DtoBase.php
+> generating exceptions:
+  - PostPets\Valgene\FieldException.php
+  - PostPets\Valgene\MissingFieldException.php
+  - PostPets\Valgene\InvalidFieldException.php
 ```
 
-will generate a Validator like the one below:
+Generated validation code looks like this:
 ```php
 <?php
 
-namespace \My\App\Validator\GetProductsApi;
+namespace \My\PetStore\Api\PostPets\Valgene;
 
 /**
  * GENERATED CODE - DO NOT MODIFY BY HAND
@@ -52,7 +93,7 @@ class ValidatorBase
      */
     public function validate($json) {
         $this->isNameValid($json, true);
-        $this->isPriceValid($json, true);
+        $this->isTagValid($json, false);
     }
     
     /**
@@ -67,13 +108,17 @@ class ValidatorBase
      * @param array $json
      * @param bool $isRequired
      */
-    protected function isPriceValid($json, $isRequired) {
+    protected function isTagValid($json, $isRequired) {
         // validation code is omited 
     }
 }
 ```
 
-## How to Install
+Generated dto code looks like this:
+
+..TODO..
+
+## Installation
 
 MacOS:
 ```bash
@@ -82,6 +127,14 @@ brew install valgene-cli
 
 ## Generating code for other languages
 
-The code generators itself are just a couple of templates that getting rendered. 
-The template language itself is [Mustache](https://mustache.github.io/) and therefore you can customize the code that is generated pretty easy.
+as seen above there is a `--lang` parameter that allows to switch the generated language/template.
+```bash
+valgene --lang php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\\My\\PetStore\\Api'
+```
+
+In fact the code generators itself are just a couple of templates that getting rendered by the valgene engine.
+The template language itself is [Mustache](https://mustache.github.io/) 
+and therefore you can customize the code that is generated pretty easy.
+
+TODO explain how in detail the a custom template can be used / provided
 
