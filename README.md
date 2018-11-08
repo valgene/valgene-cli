@@ -170,11 +170,23 @@ class DtoBase
 
 ## Installation
 
+the dart way:
+```bash
+pub global deactivate valgene_cli
+```
+
 // TODO not yet done
 
-MacOS:
+the brew way:
 ```bash
 brew install valgene-cli
+```
+
+// TODO not yet done
+
+standalone:
+```bash
+
 ```
 
 ## Generating code for other languages
