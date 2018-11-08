@@ -172,7 +172,7 @@ class DtoBase
 
 the dart way:
 ```bash
-pub global deactivate valgene_cli
+pub global activate valgene_cli
 ```
 
 // TODO not yet done
