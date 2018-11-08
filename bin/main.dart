@@ -8,22 +8,20 @@ import 'package:valgene_cli/valgene_cli.dart' as cli;
 import 'package:yaml/yaml.dart';
 
 void main(List<String> arguments) {
-  final Logger log = new Logger('main');
+  final Logger log = Logger('main');
   final ArgParser argParser = cli.argsParser();
   final argResults = argParser.parse(arguments);
 
-  if(!cli.isValid(argResults)) {
+  if (!cli.isValid(argResults)) {
     cli.showUsage(argParser);
     return;
   }
   cli.setupLogging();
   final File spec = File(argResults['spec']);
-  final target = new Directory(argResults['out']);
+  final target = Directory(argResults['out']);
   final context = GeneratorContext(
-      target,
-      cli.getOptions(argResults),
-      cli.getTemplate(argResults));
-  final parser = new JsonSchemaParser(context);
+      target, cli.getOptions(argResults), cli.getTemplate(argResults));
+  final parser = JsonSchemaParser(context);
 
   spec.readAsString().then((String contents) {
     final schema = loadYaml(contents);
