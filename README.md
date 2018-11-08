@@ -1,4 +1,4 @@
-### Valgene CLI
+# Valgene CLI
 
 [![Pub](https://img.shields.io/pub/v/valgene_cli.svg)](https://pub.dartlang.org/packages/valgene_cli)
 
@@ -21,7 +21,7 @@ This is where Valgene kicks in and reduces a lot of pain.
 Valgene (Validation Generator) generates validator and Dto boiler plate code from 
  your [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md) specs.
 
-# Given
+### Given
  
 so lets assume you have an API spec [like the following](https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v3.0/petstore-expanded.yaml) 
 that defines 1 endpoint that accepts incoming data, that is `[POST] /pets`.
@@ -52,14 +52,14 @@ NewPet:
       type: string    
 ```
 
-# When
+### When
 
 when invoking valgene  
 ```bash
 valgene --template php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\\My\\PetStore\\Api'
 ```
 
-# Then
+### Then
 
 it will generate a Validator, Dto and some Exception classes:
 
@@ -170,6 +170,8 @@ class DtoBase
 
 ## Installation
 
+// TODO not yet done
+
 MacOS:
 ```bash
 brew install valgene-cli
@@ -186,5 +188,5 @@ In fact the code generators itself are just a couple of templates that getting r
 The template language itself is [Mustache](https://mustache.github.io/) 
 and therefore you can customize the code that is generated pretty easy.
 
-TODO explain how in detail the a custom template can be used / provided
+// TODO explain how in detail the a custom template can be used / provided
 
