@@ -206,6 +206,7 @@ and therefore you can customize the code that is generated pretty easy.
 
  - add more examples and test cases for more complex schemas
  - add support for API specs in other formats such as JSON
+ - add support for a config file that lives in a own project to save the command line args
  - providing templates for other languages like Java
  - working on a IDE integration for VS Code and IntelliJ to automate things even further
  - full fledged package that can be run standalone (especially in the IDE for integration)
