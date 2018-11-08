@@ -202,3 +202,11 @@ and therefore you can customize the code that is generated pretty easy.
 
 // TODO explain how in detail the a custom template can be used / provided
 
+## Things to come
+
+ - add more examples and test cases for more complex schemas
+ - add support for API specs in other formats such as JSON
+ - providing templates for other languages like Java
+ - working on a IDE integration for VS Code and IntelliJ to automate things even further
+ - full fledged package that can be run standalone (especially in the IDE for integration)
+
