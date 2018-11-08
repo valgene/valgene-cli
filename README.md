@@ -56,7 +56,7 @@ NewPet:
 
 when invoking valgene  
 ```bash
-valgene --lang php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\\My\\PetStore\\Api'
+valgene --template php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\\My\\PetStore\\Api'
 ```
 
 # Then
@@ -64,14 +64,12 @@ valgene --lang php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\\My
 it will generate a Validator, Dto and some Exception classes:
 
 ```bash
-valgene --lang php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\\My\\PetStore\\Api'
+valgene --template php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\\My\\PetStore\\Api'
 > processing petstore-expanded.yaml:
   - route [POST]    /pets
-> generating validator:
+> generating:
   - PostPets\Valgene\ValidatorBase.php
-> generating dto:
   - PostPets\Valgene\DtoBase.php
-> generating exceptions:
   - PostPets\Valgene\FieldException.php
   - PostPets\Valgene\MissingFieldException.php
   - PostPets\Valgene\InvalidFieldException.php
@@ -127,9 +125,9 @@ brew install valgene-cli
 
 ## Generating code for other languages
 
-as seen above there is a `--lang` parameter that allows to switch the generated language/template.
+as seen above there is a `--template` parameter that allows to switch the generated language/template.
 ```bash
-valgene --lang php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\\My\\PetStore\\Api'
+valgene --template php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\\My\\PetStore\\Api'
 ```
 
 In fact the code generators itself are just a couple of templates that getting rendered by the valgene engine.
