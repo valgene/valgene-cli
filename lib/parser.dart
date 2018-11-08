@@ -39,7 +39,7 @@ class JsonSchemaParser {
       path = post['path'];
       visitProperties(payload);
 
-      ReCase endpoint = ReCase('post_' + path.replaceAll('/', '_'));
+      ReCase endpoint = ReCase('post_' + path.replaceAll(RegExp('/\/|\{.*\}/'), '_'));
 
       endpoints.add(EndpointGenerator(context, endpoint.pascalCase, fields.values.toList(growable: false)));
     });
