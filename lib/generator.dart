@@ -139,7 +139,7 @@ class EndpointGenerator {
       'folder': folder
     };
     final template = Template(source);
-    log.info('  - ${file.uri.pathSegments.last}');
+    log.info('  - ${folder}/${file.uri.pathSegments.last}');
     sink.write(template.renderString(renderContext));
   }
 

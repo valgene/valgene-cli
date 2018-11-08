@@ -68,11 +68,11 @@ valgene --template php5.5 --spec petstore-expanded.yaml --option 'php.namespace:
 > processing petstore-expanded.yaml:
   - route [POST]    /pets
 > generating:
-  - PostPets\Valgene\ValidatorBase.php
-  - PostPets\Valgene\DtoBase.php
-  - PostPets\Valgene\FieldException.php
-  - PostPets\Valgene\MissingFieldException.php
-  - PostPets\Valgene\InvalidFieldException.php
+  - PostPets/Valgene/MissingFieldException.php
+  - PostPets/Valgene/DtoBase.php
+  - PostPets/Valgene/FieldException.php
+  - PostPets/Valgene/ValidatorBase.php
+  - PostPets/Valgene/InvalidFieldException.php
 ```
 
 Generated validation code looks like this:
@@ -84,37 +84,89 @@ namespace \My\PetStore\Api\PostPets\Valgene;
 /**
  * GENERATED CODE - DO NOT MODIFY BY HAND
  */
-class ValidatorBase 
+class ValidatorBase
 {
     /**
      * @param array $json
+     * @throws MissingFieldException
+     * @throws InvalidFieldException
      */
-    public function validate($json) {
+    public function validate($json)
+    {
         $this->isNameValid($json, true);
         $this->isTagValid($json, false);
-    }
-    
-    /**
-     * @param array $json
-     * @param bool $isRequired
-     */
-    protected function isNameValid($json, $isRequired) {
-        // validation code is omited 
     }
 
     /**
      * @param array $json
      * @param bool $isRequired
      */
-    protected function isTagValid($json, $isRequired) {
-        // validation code is omited 
+    protected function isNameValid($json, $isRequired)
+    {
+        $field = DtoBase::PROPERTY_NAME;
+        if (!isset($json[$field]) && $isRequired) {
+            throw new MissingFieldException($field);
+        }
+        $value = $json[$field];
+
+        if (!is_string($value)) {
+            throw new InvalidFieldException($field, 'datatype is not string');
+        }
+    }
+
+    /**
+     * @param array $json
+     * @param bool $isRequired
+     */
+    protected function isTagValid($json, $isRequired)
+    {
+        $field = DtoBase::PROPERTY_TAG;
+        if (!isset($json[$field]) && $isRequired) {
+            throw new MissingFieldException($field);
+        }
+        $value = $json[$field];
+
+        if (!is_string($value)) {
+            throw new InvalidFieldException($field, 'datatype is not string');
+        }
     }
 }
+
 ```
 
 Generated dto code looks like this:
 
-..TODO..
+```php
+<?php
+
+namespace \My\PetStore\Api\PostPets\Valgene;
+
+/**
+ * GENERATED CODE - DO NOT MODIFY BY HAND
+ *
+ * @property string name
+ * @property string tag
+ */
+class DtoBase
+{
+    const PROPERTY_NAME = 'name';
+    const PROPERTY_TAG = 'tag';
+
+    /**
+     * @param array $item
+     * @return DtoBase
+     */
+    public static function fromArray(array $item)
+    {
+        $self = new static();
+        $self->name = $item[static::PROPERTY_NAME];
+        $self->tag = $item[static::PROPERTY_TAG];
+
+        return $self;
+    }
+}
+
+```
 
 ## Installation
 
