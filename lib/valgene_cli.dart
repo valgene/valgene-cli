@@ -35,9 +35,6 @@ Map getOptions(ArgResults args) {
     _splitOption(option, value, map);
   });
 
-  if(map['custom-folder'] == null) {
-    map['custom-folder'] = 'Valgene';
-  }
   return map;
 }
 

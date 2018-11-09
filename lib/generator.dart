@@ -1,57 +1,9 @@
 import 'dart:io';
 
 import 'package:logging/logging.dart';
-import 'package:meta/meta.dart';
-import 'package:recase/recase.dart';
 import 'package:mustache/mustache.dart';
-
-import 'package:valgene_cli/utils.dart';
-
-class Field {
-  final String name;
-  final String type;
-  final String path;
-  final int minLength;
-
-  bool get hasMinLength => minLength != null;
-  final int maxLength;
-
-  bool get hasMaxLength => maxLength != null;
-  final int minimum;
-
-  bool get hasMinimum => minimum != null;
-  final int maximum;
-
-  bool get hasMaximum => maximum != null;
-  final List enumValues;
-
-  bool get hasEnumValues => enumValues != null;
-  bool isRequired;
-
-  Field(
-      {@required String name,
-      @required String type,
-      int minLength: null,
-      int maxLength: null,
-      int minimum: null,
-      int maximum: null,
-      enumValues: null,
-      bool isRequired = false,
-      String path = '/'})
-      : name = name,
-        type = type,
-        minLength = minLength,
-        maxLength = maxLength,
-        minimum = minimum,
-        maximum = maximum,
-        enumValues = enumValues,
-        isRequired = isRequired,
-        path = path;
-}
-
-abstract class FieldValidationConstraintGenerator implements StartEnd {
-  void generateField(Field field);
-}
+import 'package:recase/recase.dart';
+import 'package:valgene_cli/types.dart';
 
 class GeneratorContext {
   final Directory outputFolder;
@@ -59,6 +11,25 @@ class GeneratorContext {
   final Map options;
 
   GeneratorContext(this.outputFolder, this.options, this.templateFolder);
+}
+
+class EndpointGeneratorContext implements GeneratorContext {
+  final GeneratorContext parentContext;
+  final String endpoint;
+
+  EndpointGeneratorContext(this.parentContext, this.endpoint);
+
+  // TODO: implement options
+  @override
+  Map get options => parentContext.options;
+
+  // TODO: implement outputFolder
+  @override
+  Directory get outputFolder => parentContext.outputFolder;
+
+  // TODO: implement templateFolder
+  @override
+  Directory get templateFolder => parentContext.templateFolder;
 }
 
 class FieldCodeArtifact {
@@ -98,96 +69,118 @@ class FieldCodeArtifact {
 class EndpointGenerator {
   final GeneratorContext context;
   final String endpoint;
-  final List<Field> fields;
+  final List<SchemaType> types;
   final List codeArtifacts = List();
   final Logger log = Logger('EndpointGenerator');
   Directory outputFolder;
   String folder;
   String folderWithBackslash;
 
-  EndpointGenerator(this.context, this.endpoint, this.fields);
+  EndpointGenerator(this.context, this.endpoint, this.types);
 
   void execute() {
-    folder = endpoint;
-    if(context.options['custom-folder'] != null && context.options['custom-folder'].length > 0) {
-      folder += '/' + context.options['custom-folder'];
-    }
-    folderWithBackslash = folder.replaceAll('/', '\\');
-    outputFolder = Directory(context.outputFolder.path + '/' + folder);
-    outputFolder.createSync(recursive: true);
-    generateArtifacts();
+    generateOutputFolder();
     generateCode();
   }
 
-  void generateCode() {
-    log.info('> generating:');
-    context.templateFolder
-        .list(recursive: true, followLinks: false)
-        .listen((FileSystemEntity entity) {
-      if (entity is File) _generateFile(entity);
-    });
-  }
-
-  void _generateFile(File templateFile) {
-    final file = new File(outputFolder.path + '/${templateFile.uri.pathSegments.last}');
-    final sink = file.openWrite();
-    final source = templateFile.readAsStringSync();
-    final renderContext = {
-      'fieldsToValidate': codeArtifacts,
-      'options': context.options,
-      'folderWithBackslash': folderWithBackslash,
-      'folder': folder
-    };
-    final template = Template(source);
-    log.info('  - ${folder}/${file.uri.pathSegments.last}');
-    sink.write(template.renderString(renderContext));
-  }
-
-  void generateArtifacts() {
-    fields.forEach((field) => codeArtifacts.add(FieldCodeArtifact(field)));
-  }
-}
-
-class FieldValidationGenerator implements FieldValidationConstraintGenerator {
-  final GeneratorContext context;
-  final List codeArtifacts = List();
-  final Logger log = Logger('FieldValidationGenerator');
-
-  FieldValidationGenerator(this.context);
-
-  @override
-  void generateField(Field field) {
-    var f = FieldCodeArtifact(field);
-    codeArtifacts.add(f);
+  void generateOutputFolder() {
+    folder = endpoint;
+    folderWithBackslash = folder.replaceAll('/', '\\');
+    outputFolder = Directory(context.outputFolder.path + '/' + folder);
+    outputFolder.createSync(recursive: true);
   }
 
   void generateCode() {
     log.info('> generating:');
+    types.forEach((type) {
+      generateCodeForType(type);
+    });
+  }
+
+  void generateCodeForType(SchemaType type) {
+    final typeContext = EndpointGeneratorContext(context, endpoint);
+    final typeGenerator = TypeGenerator(typeContext, type);
+    typeGenerator.execute();
+    if (type is ContainerType) {
+      generateCodeForType(type.innerType);
+    }
+  }
+}
+
+/**
+ * a TypeGenerator generates usually for a defined DataType in the API a:
+ *  - Dto
+ *  - DtoValidator
+ */
+class TypeGenerator {
+  final EndpointGeneratorContext context;
+  final SchemaType typeToGenerate;
+  final Logger log = Logger('TypeGenerator');
+  final codeArtifacts = [];
+  static final generatedFiles = [];
+
+  TypeGenerator(this.context, this.typeToGenerate);
+
+  void execute() {
+    _generateArtifacts();
+    _generateFiles();
+  }
+
+  void _generateFiles() {
     context.templateFolder
         .list(recursive: true, followLinks: false)
         .listen((FileSystemEntity entity) {
-      if (entity is File) _generateFile(entity);
+      _generateFile(entity);
+    });
+  }
+
+  void _generateArtifacts() {
+    typeToGenerate.fields.forEach((field) {
+      codeArtifacts.add(FieldCodeArtifact(field));
     });
   }
 
   void _generateFile(File templateFile) {
-    final file = new File(context.outputFolder.absolute.path +
-        '/${templateFile.uri.pathSegments.last}');
+    final Map renderContext = createRenderContext();
+    final String filename = sprintf(
+        templateFile.uri.pathSegments.last, renderContext);
+    final String relativeTargetPath = '${context.endpoint}/${filename}';
+    if (generatedFiles.contains(relativeTargetPath)) {
+      return;
+    }
+
+    final file = new File('${context.outputFolder.path}/${relativeTargetPath}');
     final sink = file.openWrite();
-    final source = templateFile.readAsStringSync();
-    final renderContext = {
-      'fieldsToValidate': codeArtifacts,
-      'options': context.options,
-      'endpoint': 'Foo'
-    };
-    final template = Template(source);
-    log.info('  - ${file.uri.pathSegments.last}');
-    sink.write(template.renderString(renderContext));
+    final Template template = createTemplate(templateFile);
+    renderTemplate(sink, template, renderContext);
+    log.info('  - ${relativeTargetPath}');
+    generatedFiles.add(relativeTargetPath);
   }
 
-  @override
-  void end() => generateCode();
+  void renderTemplate(IOSink sink, Template template, Map renderContext) =>
+      sink.write(template.renderString(renderContext));
 
-  @override
-  void start() => context.outputFolder.createSync();
+  Template createTemplate(File templateFile) {
+    final source = templateFile.readAsStringSync();
+    final template = Template(source);
+    return template;
+  }
+
+  Map<String, Object> createRenderContext() {
+    final ctx = {
+      'fieldsToValidate': codeArtifacts,
+      'options': context.options,
+      'folderWithBackslash': context.endpoint,
+      'endpoint': context.endpoint,
+      'name': typeToGenerate.name,
+      'isContainer': typeToGenerate is ContainerType
+    };
+    if (typeToGenerate is ContainerType) {
+      ctx['itemName'] = (typeToGenerate as ContainerType).innerType.name;
+    }
+    return ctx;
+  }
 }
+
+String sprintf(String str, Map variables) =>
+    Template(str).renderString(variables);

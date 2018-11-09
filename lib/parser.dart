@@ -1,18 +1,23 @@
 import 'package:logging/logging.dart';
 import 'package:recase/recase.dart';
 import 'package:valgene_cli/generator.dart';
+import 'package:valgene_cli/types.dart';
 
 class JsonSchemaParser {
   final Logger log = Logger('JsonSchemaParser');
   final GeneratorContext context;
-  final List endpoints = [];
+  final List<EndpointGenerator> endpoints = [];
 
   Map<String, Field> fields;
+  Map<String, SchemaType> types;
+  String currentTypeName;
   String path;
+  Map root;
 
   JsonSchemaParser(this.context);
 
   void execute(schema) {
+    root = schema;
     visitPostPaths(schema);
     endpoints.forEach((e) => e.execute());
   }
@@ -31,26 +36,68 @@ class JsonSchemaParser {
 
     posts.forEach((post) {
       fields = {};
-      var payload = post['requestBody']['content']['application/json'];
-      if (payload.keys.contains('schema')) {
-        var ref = payload['schema']['\$ref'];
-        payload = SchemaRef(ref, schema).resolve();
-      }
+      types = {};
       path = post['path'];
-      visitProperties(payload);
 
+      currentTypeName = 'requestBody';
+      var payload = post[currentTypeName]['content']['application/json'];
+      if (payload.keys.contains('schema')) {
+        final ref = payload['schema']['\$ref'];
+        final schemaRef = SchemaRef(ref, schema);
+        payload = schemaRef.resolve();
+        currentTypeName = schemaRef.name;
+      }
+      visitType(payload);
       ReCase endpoint = ReCase('post_' + path.replaceAll(RegExp('/\/|\{.*\}/'), '_'));
 
-      endpoints.add(EndpointGenerator(context, endpoint.pascalCase, fields.values.toList(growable: false)));
+      endpoints.add(EndpointGenerator(
+          context, endpoint.pascalCase, types.values.toList(growable: false)));
     });
   }
 
   void visitProperties(schema) {
-    if (schema.keys.contains('properties')) {
-      schema['properties'].forEach(visitFieldTypeDefinition);
+    schema['properties']?.forEach(visitFieldTypeDefinition);
+  }
+
+  void visitItems(schema) {
+    if (!schema.keys.contains('items')) {
+      return;
     }
-    if (schema.keys.contains('required')) {
-      schema['required'].forEach(visitRequiredDefinition);
+    visitRef(schema['items']);
+  }
+
+  void visitRef(schema) {
+    final ref = schema['\$ref'];
+    if (ref == null) {
+      return;
+    }
+    final r = SchemaRef(ref, root);
+    final type = r.resolve();
+    currentTypeName = r.name;
+    visitType(type);
+  }
+
+  void visitType(schema) {
+    final type = schema['type'];
+    switch (type) {
+      case 'object':
+        visitProperties(schema);
+        visitRequired(schema);
+        types[currentTypeName] =
+            SchemaType(currentTypeName, fields.values.toList(growable: false));
+        fields.clear();
+        break;
+      case 'array':
+        final tmpTypes = types;
+        final containerName = currentTypeName;
+        visitItems(schema);
+        final type = ContainerType(containerName, types.values
+            .toList(growable: false)
+            .first);
+        types.clear();
+        types[containerName] = type;
+        types.addAll(tmpTypes);
+        break;
     }
   }
 
@@ -66,26 +113,34 @@ class JsonSchemaParser {
         enumValues: typeDef['enum']);
   }
 
-  void visitRequiredDefinition(name) {
-    var f = fields[name];
-    f.isRequired = true;
+  void visitRequired(schema) {
+    schema['required']?.forEach((name) {
+      final f = fields[name];
+      f.isRequired = true;
+    });
   }
 }
 
 class SchemaRef {
   final String ref;
   final Map schema;
+  String _name;
 
   SchemaRef(this.ref, this.schema);
 
+  String get name => _name;
+
   Map resolve() {
-    var i = ref.split('/');
+    final i = ref.split('/');
     if (i.first != '#') {
       return null;
     }
     i.removeAt(0);
     Map next = schema;
-    i.forEach((node) => next = next[node]);
+    i.forEach((node) {
+      _name = node;
+      next = next[_name];
+    });
 
     return next;
   }
