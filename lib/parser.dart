@@ -78,7 +78,10 @@ class JsonSchemaParser {
   }
 
   void visitType(schema) {
-    final type = schema['type'];
+    String type = schema['type'];
+    if (type == null && schema['properties'] != null) {
+      type = 'object';
+    }
     switch (type) {
       case 'object':
         visitProperties(schema);
