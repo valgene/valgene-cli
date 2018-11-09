@@ -1,7 +1,7 @@
 <?php
 
 {{# options.php.namespace }}
-namespace {{ _ }}\{{ folderWithBackslash }};
+namespace {{ _ }}\{{ endpoint }};
 {{/ options.php.namespace }}
 
 /**

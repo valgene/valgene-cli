@@ -1,7 +1,7 @@
 <?php
 
 {{# options.php.namespace }}
-namespace {{ _ }}\{{ folderWithBackslash }};
+namespace {{ _ }}\{{ endpoint }};
 {{/ options.php.namespace }}
 
 /**
@@ -11,10 +11,11 @@ class MissingFieldException extends FieldException
 {
     /**
      * @param string $field
+     * @param mixed $belongsTo
      * @param string $message
      */
-    public function __construct($field, $message = 'payload does not contain this field')
+    public function __construct($field, $belongsTo, $message = 'payload does not contain this field')
     {
-        parent::__construct($field, $message);
+        parent::__construct($field, $belongsTo, $message);
     }
 }

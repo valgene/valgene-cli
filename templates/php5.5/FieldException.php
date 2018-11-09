@@ -1,7 +1,7 @@
 <?php
 
 {{# options.php.namespace }}
-namespace {{ _ }}\{{ folderWithBackslash }};
+namespace {{ _ }}\{{ endpoint }};
 {{/ options.php.namespace }}
 
 /**
@@ -12,13 +12,18 @@ class FieldException extends \DomainException
     /** @var string */
     private $field;
 
+    /** @var mixed */
+    private $belongsTo;
+
     /**
      * @param string $field
+     * @param mixed $belongsTo
      * @param string $message
      */
-    public function __construct($field, $message)
+    public function __construct($field, $belongsTo, $message)
     {
         $this->field = $field;
+        $this->belongsTo = $belongsTo;
         parent::__construct($message);
     }
 
@@ -28,5 +33,13 @@ class FieldException extends \DomainException
     public function getField()
     {
         return $this->field;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBelongsTo()
+    {
+        return $this->belongsTo;
     }
 }

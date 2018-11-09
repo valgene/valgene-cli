@@ -1,13 +1,13 @@
 <?php
 
 {{# options.php.namespace }}
-namespace {{ _ }}\{{ folderWithBackslash }};
+namespace {{ _ }}\{{ endpoint }};
 {{/ options.php.namespace }}
 
 /**
  * GENERATED CODE - DO NOT MODIFY BY HAND
  */
-class ValidatorBase
+class {{ name }}DtoValidator
 {
     /**
      * @param array $json
@@ -19,6 +19,12 @@ class ValidatorBase
       {{# fieldsToValidate }}
         $this->{{ validationMethodName }}($json, {{{ field.isRequired }}});
       {{/ fieldsToValidate }}
+      {{# isContainer }}
+        $innerValidator = new {{ itemName }}DtoValidator();
+        foreach($json as $item) {
+            $innerValidator->validate($item);
+        }
+      {{/ isContainer }}
     }
     {{# fieldsToValidate }}
 
@@ -28,50 +34,50 @@ class ValidatorBase
      */
     protected function {{ validationMethodName }}($json, $isRequired)
     {
-        $field = DtoBase::{{{ asConst }}};
+        $field = {{ name }}Dto::{{{ asConst }}};
         if (!isset($json[$field]) && $isRequired) {
-            throw new MissingFieldException($field);
+            throw new MissingFieldException($field, $json);
         }
         $value = $json[$field];
 
     {{# isString }}
         if (!is_string($value)) {
-            throw new InvalidFieldException($field, 'datatype is not string');
+            throw new InvalidFieldException($field, $json, 'datatype is not string');
         }
     {{/ isString }}
     {{# isNumber }}
         if (!is_numeric($value)) {
-            throw new InvalidFieldException($field, 'datatype is not numeric');
+            throw new InvalidFieldException($field, $json, 'datatype is not numeric');
         }
     {{/ isNumber }}
     {{# isBoolean }}
         if (!is_bool($value)) {
-            throw new InvalidFieldException($field, 'datatype is not boolean');
+            throw new InvalidFieldException($field, $json, 'datatype is not boolean');
         }
     {{/ isBoolean }}
     {{# field.hasMinLength }}
         if (strlen($value) < {{ field.minLength }}) {
-            throw new InvalidFieldException($field, 'minimum length constraint violated');
+            throw new InvalidFieldException($field, $json, 'minimum length constraint violated');
         }
     {{/ field.hasMinLength }}
     {{# field.hasMaxLength }}
         if (strlen($value) > {{ field.maxLength }}) {
-            throw new InvalidFieldException($field, 'maximum length constraint violated');
+            throw new InvalidFieldException($field, $json, 'maximum length constraint violated');
         }
     {{/ field.hasMaxLength }}
     {{# field.hasMinimum }}
         if ($value < {{ field.minimum }}) {
-            throw new InvalidFieldException($field, 'minimum value constraint violated');
+            throw new InvalidFieldException($field, $json, 'minimum value constraint violated');
         }
     {{/ field.hasMinimum }}
     {{# field.hasMaximum }}
         if ($value > {{ field.maximum }}) {
-            throw new InvalidFieldException($field, 'maximum value constraint violated');
+            throw new InvalidFieldException($field, $json, 'maximum value constraint violated');
         }
     {{/ field.hasMaximum }}
     {{# field.hasEnumValues }}
         if (!in_array($value, {{{ field.enumValues }}})) {
-            throw new InvalidFieldException($field, 'enum constraint violated');
+            throw new InvalidFieldException($field, $json, 'enum constraint violated, value must be one of {{{ field.enumValues }}}.');
         }
     {{/ field.hasEnumValues }}
     }
