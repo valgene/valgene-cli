@@ -19,15 +19,12 @@ class EndpointGeneratorContext implements GeneratorContext {
 
   EndpointGeneratorContext(this.parentContext, this.endpoint);
 
-  // TODO: implement options
   @override
   Map get options => parentContext.options;
 
-  // TODO: implement outputFolder
   @override
   Directory get outputFolder => parentContext.outputFolder;
 
-  // TODO: implement templateFolder
   @override
   Directory get templateFolder => parentContext.templateFolder;
 }
