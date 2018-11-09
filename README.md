@@ -68,23 +68,23 @@ valgene --template php5.5 --spec petstore-expanded.yaml --option 'php.namespace:
 > processing petstore-expanded.yaml:
   - route [POST]    /pets
 > generating:
-  - PostPets/Valgene/MissingFieldException.php
-  - PostPets/Valgene/DtoBase.php
-  - PostPets/Valgene/FieldException.php
-  - PostPets/Valgene/ValidatorBase.php
-  - PostPets/Valgene/InvalidFieldException.php
+  - PostPets/MissingFieldException.php
+  - PostPets/NewPetDto.php
+  - PostPets/NewPetDtoValidator.php
+  - PostPets/FieldException.php
+  - PostPets/InvalidFieldException.php
 ```
 
-Generated validation code looks like this:
+Generated Validator looks like this:
 ```php
 <?php
 
-namespace \My\PetStore\Api\PostPets\Valgene;
+namespace \My\Sample\Api\PostPets;
 
 /**
  * GENERATED CODE - DO NOT MODIFY BY HAND
  */
-class ValidatorBase
+class NewPetDtoValidator
 {
     /**
      * @param array $json
@@ -103,14 +103,14 @@ class ValidatorBase
      */
     protected function isNameValid($json, $isRequired)
     {
-        $field = DtoBase::PROPERTY_NAME;
+        $field = NewPetDto::PROPERTY_NAME;
         if (!isset($json[$field]) && $isRequired) {
-            throw new MissingFieldException($field);
+            throw new MissingFieldException($field, $json);
         }
         $value = $json[$field];
 
         if (!is_string($value)) {
-            throw new InvalidFieldException($field, 'datatype is not string');
+            throw new InvalidFieldException($field, $json, 'datatype is not string');
         }
     }
 
@@ -120,73 +120,65 @@ class ValidatorBase
      */
     protected function isTagValid($json, $isRequired)
     {
-        $field = DtoBase::PROPERTY_TAG;
+        $field = NewPetDto::PROPERTY_TAG;
         if (!isset($json[$field]) && $isRequired) {
-            throw new MissingFieldException($field);
+            throw new MissingFieldException($field, $json);
         }
         $value = $json[$field];
 
         if (!is_string($value)) {
-            throw new InvalidFieldException($field, 'datatype is not string');
+            throw new InvalidFieldException($field, $json, 'datatype is not string');
         }
     }
 }
-
 ```
 
-Generated dto code looks like this:
+Generated DTO looks like this:
 
 ```php
 <?php
 
-namespace \My\PetStore\Api\PostPets\Valgene;
+namespace \My\Sample\Api\PostPets;
 
 /**
  * GENERATED CODE - DO NOT MODIFY BY HAND
- *
- * @property string name
- * @property string tag
  */
-class DtoBase
+class NewPetDto
 {
     const PROPERTY_NAME = 'name';
     const PROPERTY_TAG = 'tag';
 
+    /** @var string $name */
+    public $name;
+
+    /** @var string $tag */
+    public $tag;
+
     /**
-     * @param array $item
-     * @return DtoBase
+     * @param array $payload
+     * @return NewPetDto
      */
-    public static function fromArray(array $item)
+    public static function fromArray(array $payload)
     {
         $self = new static();
-        $self->name = $item[static::PROPERTY_NAME];
-        $self->tag = $item[static::PROPERTY_TAG];
+        $self->name = $payload[static::PROPERTY_NAME];
+        $self->tag = $payload[static::PROPERTY_TAG];
 
         return $self;
     }
 }
-
 ```
+
+## Customization
+
+Be aware that the finally generated code is totally customizable and the shown example is very opinionated.
+You will find below further infos how to write your own templates. 
 
 ## Installation
 
-the dart way:
+([the dart way](https://www.dartlang.org/tools/pub/cmd/pub-global#activating-a-package-on-your-local-machine):
 ```bash
 pub global activate valgene_cli
-```
-
-// TODO not yet done
-
-the brew way:
-```bash
-brew install valgene-cli
-```
-
-// TODO not yet done
-
-standalone:
-```bash
-
 ```
 
 ## Generating code for other languages
