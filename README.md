@@ -58,7 +58,7 @@ NewPet:
 
 when invoking valgene  
 ```bash
-valgene --template php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\\My\\PetStore\\Api'
+valgene --template php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\My\PetStore\Api'
 ```
 
 ### Then
@@ -66,7 +66,7 @@ valgene --template php5.5 --spec petstore-expanded.yaml --option 'php.namespace:
 it will generate a Validator, Dto and some Exception classes:
 
 ```bash
-valgene --template php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\\My\\PetStore\\Api'
+valgene --template php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\My\PetStore\Api'
 > processing petstore-expanded.yaml:
   - route [POST]    /pets
 > generating:
@@ -178,7 +178,7 @@ You will find below further infos how to write your own templates.
 
 ## Installation
 
-([the dart way](https://www.dartlang.org/tools/pub/cmd/pub-global#activating-a-package-on-your-local-machine):
+[the dart way](https://www.dartlang.org/tools/pub/cmd/pub-global#activating-a-package-on-your-local-machine):
 ```bash
 pub global activate valgene_cli
 ```
@@ -187,7 +187,7 @@ pub global activate valgene_cli
 
 as seen above there is a `--template` parameter that allows to switch the generated language/template.
 ```bash
-valgene --template php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\\My\\PetStore\\Api'
+valgene --template php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\My\PetStore\Api'
 ```
 
 In fact the code generators itself are just a couple of templates that getting rendered by the valgene engine.
