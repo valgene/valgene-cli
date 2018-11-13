@@ -10,4 +10,6 @@ build/
 # Directory created by dartdoc
 doc/api/
 out/
+
 .DS_Store
+*.iml
