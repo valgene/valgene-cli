@@ -1,5 +1,7 @@
 # Valgene CLI
 
+[![Build Status](https://travis-ci.org/valgene/valgene-cli.svg?branch=master)](https://travis-ci.org/valgene/valgene-cli#)
+[![Coverage Status](https://coveralls.io/repos/github/valgene/valgene-cli/badge.svg?branch=master)](https://coveralls.io/github/valgene/valgene-cli?branch=master)
 [![Pub](https://img.shields.io/pub/v/valgene_cli.svg)](https://pub.dartlang.org/packages/valgene_cli)
 
 ## Introduction
