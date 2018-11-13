@@ -34,12 +34,12 @@ class OpenApiParser {
   OpenApiParser(this.context);
 
   void execute(schema) {
-    root = schema;
     visitPostPaths(schema);
     endpoints.forEach((e) => e.execute());
   }
 
   void visitPostPaths(schema) {
+    root = schema;
     final posts = [];
     if (schema.keys.contains('paths')) {
       schema['paths'].forEach((path, def) {
@@ -65,7 +65,8 @@ class OpenApiParser {
         currentTypeName = schemaRef.name;
       }
       visitType(payload);
-      ReCase endpoint = ReCase('post_' + path.replaceAll(RegExp('/\/|\{.*\}/'), '_'));
+      ReCase endpoint =
+      ReCase('post_' + path.replaceAll(RegExp('/\/|\{.*\}/'), '_'));
 
       endpoints.add(EndpointGenerator(
           context, endpoint.pascalCase, types.values.toList(growable: false)));
@@ -111,7 +112,8 @@ class OpenApiParser {
         final tmpTypes = types;
         final containerName = currentTypeName;
         visitItems(schema);
-        final type = ContainerType(containerName, types.values
+        final type = ContainerType(
+            containerName, types.values
             .toList(growable: false)
             .first);
         types.clear();

@@ -17,6 +17,21 @@ paths:
           application/json:
             schema:
               \$ref: '#/components/schemas/NewPetList'
+components:
+  schemas:
+    NewPetList:
+      type: array
+      items:
+        \$ref: '#/components/schemas/NewPet'
+
+    NewPet:
+      required:
+      - name
+      properties:
+        name:
+          type: string
+        tag:
+          type: string
 ''';
 
   group('OpenApiLoader', () {
