@@ -1,6 +1,6 @@
 name: valgene_cli
 description: Valgene (Validation Generator) generates validator and Dto boiler plate code from your OpenAPI specs.
-version: 0.0.1
+version: 1.0.0
 homepage: https://github.com/valgene/valgene-cli
 author: Sven Assmann <sven@d34dl0ck.me>
 
