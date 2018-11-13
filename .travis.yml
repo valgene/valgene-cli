@@ -2,9 +2,8 @@ language: dart
 dart:
   - stable
 install:
-  - pub global activate coverage
   - gem install coveralls-lcov
-script: ./tool/build.sh
+script: ./tools/build.sh
 after_success:
   - coveralls-lcov --repo-token $COVERALLS_TOKEN coverage/lcov.info
 env:
