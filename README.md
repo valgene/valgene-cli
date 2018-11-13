@@ -10,17 +10,17 @@ assuming you are providing some RESTful/Web APIs, then you are familiar with the
 
  - documenting the API
  - validating incoming data against the API specification
- - creating [Dtos](https://martinfowler.com/eaaCatalog/dataTransferObject.html) for dedicated API endpoints
+ - creating [DTOs](https://martinfowler.com/eaaCatalog/dataTransferObject.html) for dedicated API endpoints
  
 Somehow these things are disconnected to each other, that means the documentation of the API is normally not used 
-for validating incoming data. Neither it is used for writing a Dto class. As well all the tasks are repetitive, 
+for validating incoming data. Neither it is used for writing a DTO class. As well all the tasks are repetitive, 
 manual and error prone.
 
 This is where Valgene kicks in and reduces a lot of pain.
 
 ## Usage
 
-Valgene (Validation Generator) generates validator and Dto boiler plate code from 
+Valgene (Validation Generator) generates validator and DTO boiler plate code from 
  your [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md) specs.
 
 ### Given
@@ -63,7 +63,7 @@ valgene --template php5.5 --spec petstore-expanded.yaml --option 'php.namespace:
 
 ### Then
 
-it will generate a Validator, Dto and some Exception classes:
+it will generate a Validator, DTO and some Exception classes:
 
 ```bash
 valgene --template php5.5 --spec petstore-expanded.yaml --option 'php.namespace:\My\PetStore\Api'
@@ -194,11 +194,9 @@ In fact the code generators itself are just a couple of templates that getting r
 The template language itself is [Mustache](https://mustache.github.io/) 
 and therefore you can customize the code that is generated pretty easy.
 
-// TODO explain how in detail the a custom template can be used / provided
+## Things to be done
 
-## Things to come
-
- - add more examples and test cases for more complex schemas
+ - add support for locally stored user customized templates via a --template-path argument
  - add support for API specs in other formats such as JSON
  - add support for a config file that lives in a own project to save the command line args
  - providing templates for other languages like Java
