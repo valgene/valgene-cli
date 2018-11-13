@@ -140,7 +140,7 @@ class TypeGenerator {
   void _generateFile(File templateFile) {
     final Map renderContext = createRenderContext();
     final String filename =
-    sprintf(templateFile.uri.pathSegments.last, renderContext);
+        sprintf(templateFile.uri.pathSegments.last, renderContext);
     final String relativeTargetPath = '${context.endpoint}/${filename}';
     if (generatedFiles.contains(relativeTargetPath)) {
       return;

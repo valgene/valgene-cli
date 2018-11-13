@@ -66,7 +66,7 @@ class OpenApiParser {
       }
       visitType(payload);
       ReCase endpoint =
-      ReCase('post_' + path.replaceAll(RegExp('/\/|\{.*\}/'), '_'));
+          ReCase('post_' + path.replaceAll(RegExp('/\/|\{.*\}/'), '_'));
 
       endpoints.add(EndpointGenerator(
           context, endpoint.pascalCase, types.values.toList(growable: false)));
@@ -113,9 +113,7 @@ class OpenApiParser {
         final containerName = currentTypeName;
         visitItems(schema);
         final type = ContainerType(
-            containerName, types.values
-            .toList(growable: false)
-            .first);
+            containerName, types.values.toList(growable: false).first);
         types.clear();
         types[containerName] = type;
         types.addAll(tmpTypes);
