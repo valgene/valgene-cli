@@ -21,7 +21,7 @@ void main(List<String> arguments) {
   final target = Directory(argResults['out']);
   final context = GeneratorContext(
       target, cli.getOptions(argResults), cli.getTemplate(argResults));
-  final parser = JsonSchemaParser(context);
+  final parser = OpenApiParser(context);
 
   spec.readAsString().then((String contents) {
     final schema = loadYaml(contents);

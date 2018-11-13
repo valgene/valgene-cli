@@ -1,10 +1,27 @@
+import 'dart:io';
+
 import 'package:logging/logging.dart';
 import 'package:recase/recase.dart';
 import 'package:valgene_cli/generator.dart';
 import 'package:valgene_cli/types.dart';
+import 'package:yaml/yaml.dart';
 
-class JsonSchemaParser {
-  final Logger log = Logger('JsonSchemaParser');
+class OpenApiLoader {
+  static Map fromFile(File file) {
+    final String content = file.readAsStringSync();
+    if (file.uri.pathSegments.last.endsWith('yaml')) {
+      return fromYaml(content);
+    }
+    return null;
+  }
+
+  static Map fromYaml(String content) {
+    return loadYaml(content);
+  }
+}
+
+class OpenApiParser {
+  final Logger log = Logger('OpenApiParser');
   final GeneratorContext context;
   final List<EndpointGenerator> endpoints = [];
 
@@ -14,7 +31,7 @@ class JsonSchemaParser {
   String path;
   Map root;
 
-  JsonSchemaParser(this.context);
+  OpenApiParser(this.context);
 
   void execute(schema) {
     root = schema;
