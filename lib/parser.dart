@@ -7,7 +7,7 @@ import 'package:valgene_cli/types.dart';
 import 'package:yaml/yaml.dart';
 
 class OpenApiLoader {
-  static Map fromFile(File file) {
+  static fromFile(File file) {
     final String content = file.readAsStringSync();
     if (file.uri.pathSegments.last.endsWith('yaml')) {
       return fromYaml(content);
@@ -124,6 +124,7 @@ class OpenApiParser {
   void visitFieldTypeDefinition(name, typeDef) {
     fields[name] = Field(
         name: name,
+        format: typeDef['format'],
         path: path,
         type: typeDef['type'],
         minLength: typeDef['minLength'],

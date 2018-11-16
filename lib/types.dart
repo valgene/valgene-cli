@@ -3,27 +3,25 @@ import 'package:meta/meta.dart';
 class Field {
   final String name;
   final String type;
+  final String format;
   final String path;
   final int minLength;
+  final int maxLength;
+  final List enumValues;
+  final int maximum;
+  final int minimum;
+  bool isRequired;
 
   bool get hasMinLength => minLength != null;
-  final int maxLength;
-
   bool get hasMaxLength => maxLength != null;
-  final int minimum;
-
   bool get hasMinimum => minimum != null;
-  final int maximum;
-
   bool get hasMaximum => maximum != null;
-  final List enumValues;
-
   bool get hasEnumValues => enumValues != null;
-  bool isRequired;
 
   Field(
       {@required String name,
       @required String type,
+      String format,
       int minLength: null,
       int maxLength: null,
       int minimum: null,
@@ -33,6 +31,7 @@ class Field {
       String path = '/'})
       : name = name,
         type = type,
+        format = format,
         minLength = minLength,
         maxLength = maxLength,
         minimum = minimum,
