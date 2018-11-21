@@ -175,9 +175,11 @@ components:
       expect(type.name, equals('ListOfAandB'));
       expect((type as ContainerType).innerType.name, equals('ListOfAandBItem'));
       expect((type as ContainerType).innerType.fields[0].name, equals('foo'));
-      expect((type as ContainerType).innerType.fields[0].type, equals('string'));
+      expect(
+          (type as ContainerType).innerType.fields[0].type, equals('string'));
       expect((type as ContainerType).innerType.fields[1].name, equals('bar'));
-      expect((type as ContainerType).innerType.fields[1].type, equals('string'));
+      expect(
+          (type as ContainerType).innerType.fields[1].type, equals('string'));
     });
   });
 }

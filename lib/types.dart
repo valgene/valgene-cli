@@ -50,11 +50,7 @@ class SchemaType {
   const SchemaType._internal(this.name, this.key, this.fields);
 
   factory SchemaType(String name) {
-    return SchemaType._internal(
-      ReCase(name).pascalCase,
-      name,
-      []
-    );
+    return SchemaType._internal(ReCase(name).pascalCase, name, []);
   }
 
   Field getField(String name) => fields.firstWhere((f) => f.name == name);
@@ -68,11 +64,7 @@ class ContainerType implements SchemaType {
   ContainerType._internal(this._name, this._key, this._innerType);
 
   factory ContainerType(String name, SchemaType inner) {
-    return ContainerType._internal(
-        ReCase(name).pascalCase ,
-        name,
-        inner
-    );
+    return ContainerType._internal(ReCase(name).pascalCase, name, inner);
   }
 
   @override

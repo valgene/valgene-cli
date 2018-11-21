@@ -72,7 +72,7 @@ class OpenApiParser {
   String endpointName(Map post) {
     path = post['path'];
     final operationId = post['operationId'];
-    if(operationId != null) {
+    if (operationId != null) {
       path = operationId;
     }
     path = path.replaceAll(RegExp('/\/|\{.*\}/'), '_');
@@ -87,7 +87,7 @@ class OpenApiParser {
   }
 
   void visitItems(schema, ContainerType container) {
-    if(!schema.keys.contains('items')) {
+    if (!schema.keys.contains('items')) {
       return;
     }
     var items = schema['items'];
@@ -100,7 +100,7 @@ class OpenApiParser {
           type = visitRef(value);
         } else {
           var t = visitRef(value);
-          if(t == null) {
+          if (t == null) {
             throw Exception("Something went wrong: ${value}.");
           }
           type.fields.addAll(t.fields);
@@ -140,7 +140,7 @@ class OpenApiParser {
   SchemaType visitTypeArray(schema, String currentTypeName) {
     final container = _newContainerType(currentTypeName);
     visitItems(schema, container);
-    if(container.innerType == null) {
+    if (container.innerType == null) {
       throw Exception('ContainerType did not wrap an inner type. ${schema}');
     }
     return container;
@@ -156,7 +156,7 @@ class OpenApiParser {
   Field visitFieldTypeDefinition(typeDef, name) {
     var typeName = typeDef['type'];
     final type = visitType(typeDef, name);
-    if(type != null) {
+    if (type != null) {
       _addType(type);
       typeName = type.name + 'Dto';
     }

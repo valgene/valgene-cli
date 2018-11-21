@@ -17,7 +17,8 @@ void main() {
     });
 
     test("FieldCodeArtifact for string enum values", () {
-      final a = FieldCodeArtifact(Field(name: 'foo', type: 'string', enumValues: ['A', 'B', 'C']));
+      final a = FieldCodeArtifact(
+          Field(name: 'foo', type: 'string', enumValues: ['A', 'B', 'C']));
 
       expect(a.isNumber, isFalse);
       expect(a.isString, isTrue);
@@ -25,7 +26,8 @@ void main() {
     });
 
     test("FieldCodeArtifact for integers enum values", () {
-      final a = FieldCodeArtifact(Field(name: 'foo', type: 'integer', enumValues: ['1', '2', '3']));
+      final a = FieldCodeArtifact(
+          Field(name: 'foo', type: 'integer', enumValues: ['1', '2', '3']));
 
       expect(a.isNumber, isTrue);
       expect(a.enumValues, equals('[1, 2, 3]'));
@@ -61,13 +63,14 @@ class StaticType {
 }
 
 class JavaTypes {
-  static final StaticType int = StaticType('int', 'Integer', 'java.lang.Integer');
+  static final StaticType int =
+      StaticType('int', 'Integer', 'java.lang.Integer');
   static final StaticType long = StaticType('long', 'Long', 'java.lang.Long');
 
   static StaticType of(Field f) {
-    switch(f.type) {
+    switch (f.type) {
       case 'integer':
-        if(f.format == 'int64') {
+        if (f.format == 'int64') {
           return long;
         }
         return int;

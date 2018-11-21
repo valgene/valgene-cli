@@ -66,7 +66,7 @@ class FieldCodeArtifact {
         isBoolean = true;
         break;
     }
-    if(field.type.endsWith('Dto')) {
+    if (field.type.endsWith('Dto')) {
       isDto = true;
     }
   }
@@ -74,9 +74,7 @@ class FieldCodeArtifact {
   _toList(List values) {
     // TODO this is language specific code and should be sourced out to the a LanguageSpecificArtifact
     return IterableBase.iterableToFullString(
-        values.map((v) => isString ? "\"${v}\"" : v),
-        '[', ']'
-    );
+        values.map((v) => isString ? "\"${v}\"" : v), '[', ']');
   }
 }
 
