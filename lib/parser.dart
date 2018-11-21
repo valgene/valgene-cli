@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:logging/logging.dart';
@@ -7,7 +8,7 @@ import 'package:valgene_cli/types.dart';
 import 'package:yaml/yaml.dart';
 
 class OpenApiLoader {
-  static Map fromFile(File file) {
+  static fromFile(File file) {
     final String content = file.readAsStringSync();
     if (file.uri.pathSegments.last.endsWith('yaml')) {
       return fromYaml(content);
@@ -24,10 +25,9 @@ class OpenApiParser {
   final Logger log = Logger('OpenApiParser');
   final GeneratorContext context;
   final List<EndpointGenerator> endpoints = [];
+  final Queue<ContainerType> containerStack = Queue();
 
-  Map<String, Field> fields;
   Map<String, SchemaType> types;
-  String currentTypeName;
   String path;
   Map root;
 
@@ -52,11 +52,9 @@ class OpenApiParser {
     }
 
     posts.forEach((post) {
-      fields = {};
       types = {};
-      path = post['path'];
 
-      currentTypeName = 'requestBody';
+      String currentTypeName = 'requestBody';
       var payload = post[currentTypeName]['content']['application/json'];
       if (payload.keys.contains('schema')) {
         final ref = payload['schema']['\$ref'];
@@ -64,80 +62,133 @@ class OpenApiParser {
         payload = schemaRef.resolve();
         currentTypeName = schemaRef.name;
       }
-      visitType(payload);
-      ReCase endpoint =
-          ReCase('post_' + path.replaceAll(RegExp('/\/|\{.*\}/'), '_'));
+      types[currentTypeName] = visitType(payload, currentTypeName);
 
       endpoints.add(EndpointGenerator(
-          context, endpoint.pascalCase, types.values.toList(growable: false)));
+          context, endpointName(post), types.values.toList(growable: false)));
     });
   }
 
-  void visitProperties(schema) {
-    schema['properties']?.forEach(visitFieldTypeDefinition);
+  String endpointName(Map post) {
+    path = post['path'];
+    final operationId = post['operationId'];
+    if (operationId != null) {
+      path = operationId;
+    }
+    path = path.replaceAll(RegExp('/\/|\{.*\}/'), '_');
+    ReCase endpoint = ReCase('post_' + path);
+    return endpoint.pascalCase;
   }
 
-  void visitItems(schema) {
+  void visitProperties(schema, SchemaType type) {
+    schema['properties']?.forEach((name, value) {
+      type.fields.add(visitFieldTypeDefinition(value, name));
+    });
+  }
+
+  void visitItems(schema, ContainerType container) {
     if (!schema.keys.contains('items')) {
       return;
     }
-    visitRef(schema['items']);
+    var items = schema['items'];
+    if (items.keys.contains('\$ref')) {
+      container.innerType = visitRef(items);
+    } else if (items.keys.contains('allOf')) {
+      SchemaType type = null;
+      items['allOf'].forEach((value) {
+        if (type == null) {
+          type = visitRef(value);
+        } else {
+          var t = visitRef(value);
+          if (t == null) {
+            throw Exception("Something went wrong: ${value}.");
+          }
+          type.fields.addAll(t.fields);
+        }
+      });
+      container.innerType = SchemaType(container.name + 'Item')
+        ..fields.addAll(type.fields);
+    }
   }
 
-  void visitRef(schema) {
+  SchemaType visitRef(schema) {
     final ref = schema['\$ref'];
     if (ref == null) {
-      return;
+      return null;
     }
     final r = SchemaRef(ref, root);
     final type = r.resolve();
-    currentTypeName = r.name;
-    visitType(type);
+    return visitType(type, r.name);
   }
 
-  void visitType(schema) {
+  SchemaType visitType(schema, String currentTypeName) {
     String type = schema['type'];
     if (type == null && schema['properties'] != null) {
       type = 'object';
     }
     switch (type) {
       case 'object':
-        visitProperties(schema);
-        visitRequired(schema);
-        types[currentTypeName] =
-            SchemaType(currentTypeName, fields.values.toList(growable: false));
-        fields.clear();
+        return visitTypeObject(schema, currentTypeName);
         break;
       case 'array':
-        final tmpTypes = types;
-        final containerName = currentTypeName;
-        visitItems(schema);
-        final type = ContainerType(
-            containerName, types.values.toList(growable: false).first);
-        types.clear();
-        types[containerName] = type;
-        types.addAll(tmpTypes);
+        return visitTypeArray(schema, currentTypeName);
         break;
     }
+    return null;
   }
 
-  void visitFieldTypeDefinition(name, typeDef) {
-    fields[name] = Field(
+  SchemaType visitTypeArray(schema, String currentTypeName) {
+    final container = _newContainerType(currentTypeName);
+    visitItems(schema, container);
+    if (container.innerType == null) {
+      throw Exception('ContainerType did not wrap an inner type. ${schema}');
+    }
+    return container;
+  }
+
+  SchemaType visitTypeObject(schema, String currentTypeName) {
+    final type = SchemaType(currentTypeName);
+    visitProperties(schema, type);
+    visitRequired(schema, type);
+    return type;
+  }
+
+  Field visitFieldTypeDefinition(typeDef, name) {
+    var typeName = typeDef['type'];
+    final type = visitType(typeDef, name);
+    if (type != null) {
+      _addType(type);
+      typeName = type.name + 'Dto';
+    }
+
+    final field = Field(
         name: name,
+        format: typeDef['format'],
         path: path,
-        type: typeDef['type'],
+        type: typeName,
         minLength: typeDef['minLength'],
         maxLength: typeDef['maxLength'],
         minimum: typeDef['minimum'],
         maximum: typeDef['maximum'],
         enumValues: typeDef['enum']);
+
+    return field;
   }
 
-  void visitRequired(schema) {
+  void visitRequired(schema, SchemaType type) {
     schema['required']?.forEach((name) {
-      final f = fields[name];
-      f.isRequired = true;
+      type.getField(name)?.isRequired = true;
     });
+  }
+
+  void _addType(SchemaType type) {
+    types[type.key] = type;
+  }
+
+  ContainerType _newContainerType(String currentTypeName) {
+    final containerType = ContainerType(currentTypeName, null);
+    containerStack.addLast(containerType);
+    return containerType;
   }
 }
 

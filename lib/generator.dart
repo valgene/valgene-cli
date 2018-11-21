@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:logging/logging.dart';
@@ -38,6 +39,7 @@ class FieldCodeArtifact {
   bool isString = false;
   bool isNumber = false;
   bool isBoolean = false;
+  bool isDto = false;
 
   FieldCodeArtifact(this.field) {
     ReCase rc = ReCase(field.name);
@@ -45,6 +47,10 @@ class FieldCodeArtifact {
     this.asProperty = rc.camelCase;
     this.validationMethodName = "is${rc.pascalCase}Valid";
     initDataType();
+  }
+
+  get enumValues {
+    return _toList(field.enumValues);
   }
 
   void initDataType() {
@@ -60,6 +66,15 @@ class FieldCodeArtifact {
         isBoolean = true;
         break;
     }
+    if (field.type.endsWith('Dto')) {
+      isDto = true;
+    }
+  }
+
+  _toList(List values) {
+    // TODO this is language specific code and should be sourced out to the a LanguageSpecificArtifact
+    return IterableBase.iterableToFullString(
+        values.map((v) => isString ? "\"${v}\"" : v), '[', ']');
   }
 }
 

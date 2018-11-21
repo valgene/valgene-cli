@@ -40,6 +40,12 @@ class {{ name }}DtoValidator
         }
         $value = $json[$field];
 
+    {{# isDto }}
+        $v = new {{ field.type }}Validator();
+        foreach ($value as $item) {
+            $v->validate($item);
+        }
+    {{/ isDto }}
     {{# isString }}
         if (!is_string($value)) {
             throw new InvalidFieldException($field, $json, 'datatype is not string');
@@ -76,7 +82,7 @@ class {{ name }}DtoValidator
         }
     {{/ field.hasMaximum }}
     {{# field.hasEnumValues }}
-        if (!in_array($value, {{{ field.enumValues }}})) {
+        if (!in_array($value, {{{ enumValues }}})) {
             throw new InvalidFieldException($field, $json, 'enum constraint violated, value must be one of {{{ field.enumValues }}}.');
         }
     {{/ field.hasEnumValues }}

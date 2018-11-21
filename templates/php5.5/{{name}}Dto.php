@@ -40,7 +40,12 @@ class {{ name }}Dto
     {{/ isContainer }}
     {{^ isContainer }}
       {{# fieldsToValidate }}
+        {{# isDto }}
+        $self->{{{ asProperty }}} = {{ field.type }}::fromArray($payload[static::{{{ asConst }}}]);
+        {{/ isDto }}
+        {{^ isDto }}
         $self->{{{ asProperty }}} = $payload[static::{{{ asConst }}}];
+        {{/ isDto }}
       {{/ fieldsToValidate }}
     {{/ isContainer }}
 
