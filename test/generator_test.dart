@@ -15,6 +15,21 @@ void main() {
       expect(a.asConst, equals('PROPERTY_FOO'));
       expect(a.asProperty, equals('foo'));
     });
+
+    test("FieldCodeArtifact for string enum values", () {
+      final a = FieldCodeArtifact(Field(name: 'foo', type: 'string', enumValues: ['A', 'B', 'C']));
+
+      expect(a.isNumber, isFalse);
+      expect(a.isString, isTrue);
+      expect(a.enumValues, equals('["A", "B", "C"]'));
+    });
+
+    test("FieldCodeArtifact for integers enum values", () {
+      final a = FieldCodeArtifact(Field(name: 'foo', type: 'integer', enumValues: ['1', '2', '3']));
+
+      expect(a.isNumber, isTrue);
+      expect(a.enumValues, equals('[1, 2, 3]'));
+    });
   });
 
   group('Typed Languages Adaption', () {

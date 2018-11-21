@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:logging/logging.dart';
@@ -48,6 +49,10 @@ class FieldCodeArtifact {
     initDataType();
   }
 
+  get enumValues {
+    return _toList(field.enumValues);
+  }
+
   void initDataType() {
     switch (field.type) {
       case 'string':
@@ -64,6 +69,14 @@ class FieldCodeArtifact {
     if(field.type.endsWith('Dto')) {
       isDto = true;
     }
+  }
+
+  _toList(List values) {
+    // TODO this is language specific code and should be sourced out to the a LanguageSpecificArtifact
+    return IterableBase.iterableToFullString(
+        values.map((v) => isString ? "\"${v}\"" : v),
+        '[', ']'
+    );
   }
 }
 
