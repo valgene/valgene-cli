@@ -40,6 +40,12 @@ class {{ name }}DtoValidator
         }
         $value = $json[$field];
 
+    {{# isDto }}
+        $v = new {{ field.type }}Validator();
+        foreach ($value as $item) {
+            $v->validate($item);
+        }
+    {{/ isDto }}
     {{# isString }}
         if (!is_string($value)) {
             throw new InvalidFieldException($field, $json, 'datatype is not string');

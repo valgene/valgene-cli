@@ -38,6 +38,7 @@ class FieldCodeArtifact {
   bool isString = false;
   bool isNumber = false;
   bool isBoolean = false;
+  bool isDto = false;
 
   FieldCodeArtifact(this.field) {
     ReCase rc = ReCase(field.name);
@@ -59,6 +60,9 @@ class FieldCodeArtifact {
       case 'boolean':
         isBoolean = true;
         break;
+    }
+    if(field.type.endsWith('Dto')) {
+      isDto = true;
     }
   }
 }

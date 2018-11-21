@@ -10,7 +10,7 @@ paths:
   /pets:
     post:
       description: Creates a list of new pet in the store.  Duplicates are allowed
-      operationId: addPets
+      operationId: newPet
       requestBody:
         description: Pets to add to the store
         required: true
@@ -59,7 +59,7 @@ components:
 
       parser.visitPostPaths(spec);
       final endpoint = parser.endpoints[0];
-      expect(endpoint.endpoint, equals('PostPets'));
+      expect(endpoint.endpoint, equals('PostNewPet'));
       final type = endpoint.types[0];
       expect(type.name, equals('NewPetList'));
     });
@@ -74,10 +74,10 @@ paths:
         content:
           application/json:
             schema:
-              \$ref: '#/components/schemas/PostPetsReqest'
+              \$ref: '#/components/schemas/PostPetsRequest'
 components:
   schemas:
-    PostPetsReqest:
+    PostPetsRequest:
       type: object
       properties:
         name:
@@ -107,7 +107,7 @@ components:
       final endpoint = parser.endpoints[0];
 
       SchemaType type = endpoint.types[2];
-      expect(type.name, equals('PostPetsReqest'));
+      expect(type.name, equals('PostPetsRequest'));
       expect(type.fields[2].name, equals('name'));
       expect(type.fields[1].name, equals('listOfA'));
       expect(type.fields[1].type, equals('ListOfADto'));
@@ -135,10 +135,10 @@ paths:
         content:
           application/json:
             schema:
-              \$ref: '#/components/schemas/PostPetsReqest'
+              \$ref: '#/components/schemas/PostPetsRequest'
 components:
   schemas:
-    PostPetsReqest:
+    PostPetsRequest:
       type: object
       properties:
         name:
@@ -166,7 +166,7 @@ components:
       final endpoint = parser.endpoints[0];
 
       SchemaType type = endpoint.types[1];
-      expect(type.name, equals('PostPetsReqest'));
+      expect(type.name, equals('PostPetsRequest'));
       expect(type.fields[1].name, equals('name'));
       expect(type.fields[0].name, equals('listOfAandB'));
       expect(type.fields[0].type, equals('ListOfAandBDto'));

@@ -53,7 +53,6 @@ class OpenApiParser {
 
     posts.forEach((post) {
       types = {};
-      path = post['path'];
 
       String currentTypeName = 'requestBody';
       var payload = post[currentTypeName]['content']['application/json'];
@@ -64,12 +63,21 @@ class OpenApiParser {
         currentTypeName = schemaRef.name;
       }
       types[currentTypeName] = visitType(payload, currentTypeName);
-      ReCase endpoint =
-          ReCase('post_' + path.replaceAll(RegExp('/\/|\{.*\}/'), '_'));
 
       endpoints.add(EndpointGenerator(
-          context, endpoint.pascalCase, types.values.toList(growable: false)));
+          context, endpointName(post), types.values.toList(growable: false)));
     });
+  }
+
+  String endpointName(Map post) {
+    path = post['path'];
+    final operationId = post['operationId'];
+    if(operationId != null) {
+      path = operationId;
+    }
+    path = path.replaceAll(RegExp('/\/|\{.*\}/'), '_');
+    ReCase endpoint = ReCase('post_' + path);
+    return endpoint.pascalCase;
   }
 
   void visitProperties(schema, SchemaType type) {
