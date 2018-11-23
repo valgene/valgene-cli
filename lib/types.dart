@@ -10,6 +10,7 @@ class Field {
   final List enumValues;
   final int maximum;
   final int minimum;
+  final String defaultValue;
   String type;
   bool isRequired;
 
@@ -29,7 +30,8 @@ class Field {
       int maximum: null,
       enumValues: null,
       bool isRequired = false,
-      String path = '/'})
+      String path = '/',
+      String defaultValue = null})
       : name = name,
         type = type,
         format = format,
@@ -39,7 +41,8 @@ class Field {
         maximum = maximum,
         enumValues = enumValues,
         isRequired = isRequired,
-        path = path;
+        path = path,
+        defaultValue = defaultValue;
 }
 
 class SchemaType {

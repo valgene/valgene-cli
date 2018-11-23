@@ -40,6 +40,8 @@ class FieldCodeArtifact {
   bool isNumber = false;
   bool isBoolean = false;
   bool isDto = false;
+  bool get hasDefault => field.defaultValue != null;
+  String get defaultValue => _toValue(field.defaultValue);
 
   FieldCodeArtifact(this.field) {
     ReCase rc = ReCase(field.name);
@@ -74,8 +76,10 @@ class FieldCodeArtifact {
   _toList(List values) {
     // TODO this is language specific code and should be sourced out to the a LanguageSpecificArtifact
     return IterableBase.iterableToFullString(
-        values.map((v) => isString ? "\"${v}\"" : v), '[', ']');
+        values.map((v) => _toValue(v)), '[', ']');
   }
+
+  _toValue(v) => isString ? "\"${v}\"" : v;
 }
 
 class EndpointGenerator {

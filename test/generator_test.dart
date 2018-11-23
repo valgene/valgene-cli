@@ -32,6 +32,22 @@ void main() {
       expect(a.isNumber, isTrue);
       expect(a.enumValues, equals('[1, 2, 3]'));
     });
+
+    test("FieldCodeArtifact for string default values", () {
+      final a = FieldCodeArtifact(
+          Field(name: 'foo', type: 'string', defaultValue: 'Foo'));
+
+      expect(a.isString, isTrue);
+      expect(a.defaultValue, equals('"Foo"'));
+    });
+
+    test("FieldCodeArtifact for string default values", () {
+      final a = FieldCodeArtifact(
+          Field(name: 'foo', type: 'integer', defaultValue: '1'));
+
+      expect(a.isNumber, isTrue);
+      expect(a.defaultValue, equals('1'));
+    });
   });
 
   group('Typed Languages Adaption', () {

@@ -170,7 +170,8 @@ class OpenApiParser {
         maxLength: typeDef['maxLength'],
         minimum: typeDef['minimum'],
         maximum: typeDef['maximum'],
-        enumValues: typeDef['enum']);
+        enumValues: typeDef['enum'],
+        defaultValue: typeDef['default']);
 
     return field;
   }
