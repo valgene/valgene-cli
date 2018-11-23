@@ -1,9 +1,19 @@
-import 'package:valgene_cli/valgene_cli.dart' as cli;
 import 'package:test/test.dart';
+import 'package:valgene_cli/valgene_cli.dart';
 
 void main() {
-  test('That 4 command line arguments are supported', () {
-    final parser = cli.argsParser();
-    expect(parser.options.length, equals(4));
+  test('that missing spec argument is not valid', () {
+    final cli = Cli([]);
+    expect(cli.isValid(), isFalse);
+  });
+
+  test('that given spec argument is valid', () {
+    final cli = Cli(['--spec', 'somespec.yaml']);
+    expect(cli.isValid(), isTrue);
+  });
+
+  test('that given spec argument is valid', () {
+    final cli = Cli(['--spec', 'somespec.yaml']);
+    expect(cli.isValid(), isTrue);
   });
 }

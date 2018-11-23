@@ -2,66 +2,98 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:logging/logging.dart';
+import 'package:valgene_cli/generator.dart';
+import 'package:valgene_cli/parser.dart';
+import 'package:yaml/yaml.dart';
 
-ArgParser argsParser() => new ArgParser()
-  ..addOption('spec',
-      help: 'OpenAPI specification file .yaml', valueHelp: 'file')
-  ..addOption('template',
-      defaultsTo: 'php5.5', help: 'code template folder for code generation')
-  ..addOption('out',
-      abbr: 'o',
-      defaultsTo: 'out',
-      help: 'target folder for the generated code',
-      valueHelp: 'directory')
-  ..addMultiOption('option',
-      help: 'add template specific options. multiple are allowed',
-      valueHelp: 'scope.subcope:value');
+class Cli {
+  final Logger log = Logger('Cli');
+  final ArgParser argParser = new ArgParser()
+    ..addOption('spec',
+        help: 'OpenAPI specification file .yaml', valueHelp: 'file')
+    ..addOption('template',
+        defaultsTo: 'php5.5', help: 'code template folder for code generation')
+    ..addOption('out',
+        abbr: 'o',
+        defaultsTo: 'out',
+        help: 'target folder for the generated code',
+        valueHelp: 'directory')
+    ..addMultiOption('option',
+        help: 'add template specific options. multiple are allowed',
+        valueHelp: 'scope.subcope:value');
 
-bool isValid(ArgResults result) => result.wasParsed('spec');
+  final Iterable<String> arguments;
+  ArgResults parsedArguments;
 
-void showUsage(ArgParser parser) => print(parser.usage);
-
-Map getOptions(ArgResults args) {
-  var options = [];
-  if (args.wasParsed('option')) {
-    options = args['option'];
+  Cli(this.arguments) {
+    parsedArguments = argParser.parse(arguments);
+    _setupLogging();
   }
 
-  Map map = {};
-  options.forEach((option) {
-    var keyValue = option.split(':');
-    option = keyValue.first;
-    var value = {'_': keyValue.last};
-    _splitOption(option, value, map);
-  });
+  bool isValid() {
+    return parsedArguments.wasParsed('spec');
+  }
 
-  return map;
-}
+  void showUsage() => print(argParser.usage);
 
-Directory getTemplate(ArgResults args) {
-  final file = File(Platform.script.toFilePath());
+  void execute() {
+    final File spec = File(parsedArguments['spec']);
+    final target = Directory(parsedArguments['out']);
+    final context = GeneratorContext(target, _getOptions(), _getTemplate());
+    final parser = OpenApiParser(context);
 
-  return Directory(
-      file.parent.parent.absolute.path + '/templates/${args['template']}');
-}
+    spec.readAsString().then((String contents) {
+      final schema = loadYaml(contents);
+      log.info('> processing ${spec.uri.pathSegments.last}:');
+      parser.execute(schema);
+    });
+  }
 
-void setupLogging() {
-  Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen((LogRecord rec) {
-    print('${rec.message}');
-  });
-}
+  void _setupLogging() {
+    Logger.root.level = Level.ALL;
+    Logger.root.onRecord.listen((LogRecord rec) {
+      print('${rec.message}');
+    });
+  }
 
-Map _splitOption(String key, Map value, Map options) {
-  var scopes = key.split('.');
-  var next = options;
-  scopes.forEach((scope) {
-    if (!next.containsKey(scope)) {
-      next[scope] = {};
+  Directory _getTemplate() {
+    if (Platform.script.scheme == 'data') {
+      throw Exception('unable to determine the template folder');
     }
-    next = next[scope];
-  });
-  next.addAll(value);
+    final file = File(Platform.script.toFilePath());
 
-  return options;
+    return Directory(file.parent.parent.absolute.path +
+        '/templates/${parsedArguments['template']}');
+  }
+
+  Map _getOptions() {
+    var options = [];
+    if (parsedArguments.wasParsed('option')) {
+      options = parsedArguments['option'];
+    }
+
+    Map map = {};
+    options.forEach((option) {
+      var keyValue = option.split(':');
+      option = keyValue.first;
+      var value = {'_': keyValue.last};
+      _splitOption(option, value, map);
+    });
+
+    return map;
+  }
+
+  static Map _splitOption(String key, Map value, Map options) {
+    var scopes = key.split('.');
+    var next = options;
+    scopes.forEach((scope) {
+      if (!next.containsKey(scope)) {
+        next[scope] = {};
+      }
+      next = next[scope];
+    });
+    next.addAll(value);
+
+    return options;
+  }
 }

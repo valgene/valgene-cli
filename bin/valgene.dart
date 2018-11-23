@@ -1,31 +1,10 @@
-import 'dart:io';
-
-import 'package:args/args.dart';
-import 'package:logging/logging.dart';
-import 'package:valgene_cli/generator.dart';
-import 'package:valgene_cli/parser.dart';
-import 'package:valgene_cli/valgene_cli.dart' as cli;
-import 'package:yaml/yaml.dart';
+import 'package:valgene_cli/valgene_cli.dart';
 
 void main(List<String> arguments) {
-  final Logger log = Logger('main');
-  final ArgParser argParser = cli.argsParser();
-  final argResults = argParser.parse(arguments);
-
-  if (!cli.isValid(argResults)) {
-    cli.showUsage(argParser);
+  final cli = Cli(arguments);
+  if (cli.isValid()) {
+    cli.execute();
     return;
   }
-  cli.setupLogging();
-  final File spec = File(argResults['spec']);
-  final target = Directory(argResults['out']);
-  final context = GeneratorContext(
-      target, cli.getOptions(argResults), cli.getTemplate(argResults));
-  final parser = OpenApiParser(context);
-
-  spec.readAsString().then((String contents) {
-    final schema = loadYaml(contents);
-    log.info('> processing ${spec.uri.pathSegments.last}:');
-    parser.execute(schema);
-  });
+  cli.showUsage();
 }
