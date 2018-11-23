@@ -41,7 +41,7 @@ class FieldCodeArtifact {
   bool isBoolean = false;
   bool isDto = false;
   bool get hasDefault => field.defaultValue != null;
-  String get defaultValue => _toValue(field.defaultValue);
+  dynamic get defaultValue => _toValue(field.defaultValue);
 
   FieldCodeArtifact(this.field) {
     ReCase rc = ReCase(field.name);

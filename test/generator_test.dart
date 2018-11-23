@@ -3,9 +3,62 @@ import 'package:valgene_cli/generator.dart';
 import 'package:valgene_cli/types.dart';
 
 void main() {
+  group('FieldCodeArtifact.enumValues', () {
+    test("strings", () {
+      final a = FieldCodeArtifact(
+          Field(name: 'foo', type: OpenApiPrimitives.string, enumValues: ['A', 'B', 'C']));
+
+      expect(a.isNumber, isFalse);
+      expect(a.isString, isTrue);
+      expect(a.enumValues, equals('["A", "B", "C"]'));
+    });
+
+    test("integers", () {
+      final a = FieldCodeArtifact(
+          Field(name: 'foo', type: OpenApiPrimitives.integer, enumValues: [1, 2, 3]));
+
+      expect(a.isNumber, isTrue);
+      expect(a.enumValues, equals('[1, 2, 3]'));
+    });
+
+    test("booleans", () {
+      final a = FieldCodeArtifact(
+          Field(name: 'foo', type: OpenApiPrimitives.boolean, enumValues: [true, false]));
+
+      expect(a.isBoolean, isTrue);
+      expect(a.enumValues, equals('[true, false]'));
+    });
+  });
+
+  group('FieldCodeArtifact.defaultValue', () {
+    test("string", () {
+      final a = FieldCodeArtifact(
+          Field(name: 'foo', type: OpenApiPrimitives.string, defaultValue: 'Foo'));
+
+      expect(a.isString, isTrue);
+      expect(a.defaultValue, equals('"Foo"'));
+    });
+
+    test("boolean", () {
+      final a = FieldCodeArtifact(
+          Field(name: 'foo', type: OpenApiPrimitives.boolean, defaultValue: false));
+
+      expect(a.isBoolean, isTrue);
+      expect(a.defaultValue, isFalse);
+    });
+
+    test("float", () {
+      final a = FieldCodeArtifact(
+          Field(name: 'foo', type: OpenApiPrimitives.number, defaultValue: .6));
+
+      expect(a.isNumber, isTrue);
+      expect(a.defaultValue, .6);
+    });
+  });
+
   group('FieldCodeArtifact tests', () {
-    test("FieldCodeArtifact for integer", () {
-      final f = Field(name: 'foo', type: 'integer');
+    test("integer", () {
+      final f = Field(name: 'foo', type: OpenApiPrimitives.integer);
       final a = FieldCodeArtifact(f);
 
       expect(a.isNumber, isTrue);
@@ -16,43 +69,18 @@ void main() {
       expect(a.asProperty, equals('foo'));
     });
 
-    test("FieldCodeArtifact for string enum values", () {
-      final a = FieldCodeArtifact(
-          Field(name: 'foo', type: 'string', enumValues: ['A', 'B', 'C']));
+    test("boolean", () {
+      final a = FieldCodeArtifact(Field(name: 'foo', type: OpenApiPrimitives.boolean));
 
       expect(a.isNumber, isFalse);
-      expect(a.isString, isTrue);
-      expect(a.enumValues, equals('["A", "B", "C"]'));
-    });
-
-    test("FieldCodeArtifact for integers enum values", () {
-      final a = FieldCodeArtifact(
-          Field(name: 'foo', type: 'integer', enumValues: ['1', '2', '3']));
-
-      expect(a.isNumber, isTrue);
-      expect(a.enumValues, equals('[1, 2, 3]'));
-    });
-
-    test("FieldCodeArtifact for string default values", () {
-      final a = FieldCodeArtifact(
-          Field(name: 'foo', type: 'string', defaultValue: 'Foo'));
-
-      expect(a.isString, isTrue);
-      expect(a.defaultValue, equals('"Foo"'));
-    });
-
-    test("FieldCodeArtifact for string default values", () {
-      final a = FieldCodeArtifact(
-          Field(name: 'foo', type: 'integer', defaultValue: '1'));
-
-      expect(a.isNumber, isTrue);
-      expect(a.defaultValue, equals('1'));
+      expect(a.isString, isFalse);
+      expect(a.isBoolean, isTrue);
     });
   });
 
   group('Typed Languages Adaption', () {
     test('Java integers', () {
-      final f = Field(name: 'foo', type: 'integer');
+      final f = Field(name: 'foo', type: OpenApiPrimitives.integer);
       final java = JavaTypes.of(f);
 
       expect(java.nativeName, equals('int'));
@@ -60,7 +88,7 @@ void main() {
       expect(java.className, equals('Integer'));
     });
     test('Java longs', () {
-      final f = Field(name: 'foo', type: 'integer', format: 'int64');
+      final f = Field(name: 'foo', type: OpenApiPrimitives.integer, format: 'int64');
       final java = JavaTypes.of(f);
 
       expect(java.nativeName, equals('long'));

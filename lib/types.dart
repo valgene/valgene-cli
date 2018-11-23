@@ -1,6 +1,19 @@
 import 'package:meta/meta.dart';
 import 'package:recase/recase.dart';
 
+/// defines the primitive types of
+/// [JSON Schema](https://tools.ietf.org/html/draft-wright-json-schema-00#section-4.2)
+/// and
+/// [OpenAPI spec](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#schemaObject)
+class OpenApiPrimitives {
+  static const String string = 'string';
+  static const String integer = 'integer';
+  static const String number = 'number';
+  static const String boolean = 'boolean';
+  static const String object = 'object';
+  static const String array = 'array';
+}
+
 class Field {
   final String name;
   final String format;
@@ -10,7 +23,7 @@ class Field {
   final List enumValues;
   final int maximum;
   final int minimum;
-  final String defaultValue;
+  final dynamic defaultValue;
   String type;
   bool isRequired;
 
@@ -31,7 +44,7 @@ class Field {
       enumValues: null,
       bool isRequired = false,
       String path = '/',
-      String defaultValue = null})
+        dynamic defaultValue = null})
       : name = name,
         type = type,
         format = format,
