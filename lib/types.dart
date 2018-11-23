@@ -44,7 +44,7 @@ class Field {
       enumValues: null,
       bool isRequired = false,
       String path = '/',
-        dynamic defaultValue = null})
+      dynamic defaultValue = null})
       : name = name,
         type = type,
         format = format,
