@@ -147,6 +147,7 @@ components:
           type: string
         tag:
           type: string
+          default: "someType"
 
     Error:
       required:

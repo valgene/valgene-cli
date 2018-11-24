@@ -38,3 +38,21 @@ components:
 ```
 
 the array `listOfAandB` will lead to a DTO `ListOfAandBDto` that is the collection. The collection will hold items of type `ListOfAandBItemDto` that is because the type is not unique rather it is a composed type out of `TypeA` and `TypeB` that builds the Item data type.
+
+### default
+
+```yaml
+components:
+  schemas:
+    NewPet:
+      required:
+      - name
+      properties:
+        name:
+          type: string
+        tag:
+          type: string
+          default: "someType"
+```
+
+the `default` value `"someType"` will be assign to the `NewPetDto::tag` in case the field is is absent in the payload. 
