@@ -16,4 +16,15 @@ void main() {
     final cli = Cli(['--spec', 'somespec.yaml']);
     expect(cli.isValid(), isTrue);
   });
+
+  test('that given options are parsed', () {
+    final cli = Cli(['--option', 'php.namespace:\\My\\App']);
+    expect(
+        cli.getOptions(),
+        equals({
+          'php': {
+            'namespace': {'_': '\\My\\App'}
+          }
+        }));
+  });
 }

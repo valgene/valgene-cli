@@ -39,7 +39,7 @@ class Cli {
   void execute() {
     final File spec = File(parsedArguments['spec']);
     final target = Directory(parsedArguments['out']);
-    final context = GeneratorContext(target, _getOptions(), _getTemplate());
+    final context = GeneratorContext(target, getOptions(), _getTemplate());
     final parser = OpenApiParser(context);
 
     spec.readAsString().then((String contents) {
@@ -66,7 +66,7 @@ class Cli {
         '/templates/${parsedArguments['template']}');
   }
 
-  Map _getOptions() {
+  Map getOptions() {
     var options = [];
     if (parsedArguments.wasParsed('option')) {
       options = parsedArguments['option'];
