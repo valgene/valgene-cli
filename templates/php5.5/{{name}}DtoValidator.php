@@ -42,9 +42,7 @@ class {{ name }}DtoValidator
 
     {{# isDto }}
         $v = new {{ field.type }}Validator();
-        foreach ($value as $item) {
-            $v->validate($item);
-        }
+        $v->validate($value);
     {{/ isDto }}
     {{# isString }}
         if (!is_string($value)) {
