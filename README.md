@@ -202,7 +202,6 @@ and therefore you can customize the code that is generated pretty easy.
 
 ## Things to be done
 
- - add support for locally stored user customized templates via a --template-path argument
  - add support for API specs in other formats such as JSON
  - add support for a config file that lives in a own project to save the command line args
  - providing templates for other languages like Java
