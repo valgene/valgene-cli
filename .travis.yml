@@ -3,8 +3,6 @@ dart:
   - stable
 install:
   - gem install coveralls-lcov
-script: ./tools/build.sh
+script: make
 after_success:
   - coveralls-lcov --repo-token $COVERALLS_TOKEN coverage/lcov.info
-env:
-  - DARTANALYZER_FLAGS=--fatal-warnings
