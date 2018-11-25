@@ -42,20 +42,15 @@ void main() {
 
   test('that given template-folder argument will overrule template', () {
     final expectedDirectory = Directory.current.path;
-    final cli = Cli([
-      '--template', 'php5.5',
-      '--template-folder', expectedDirectory
-    ]);
+    final cli =
+        Cli(['--template', 'php5.5', '--template-folder', expectedDirectory]);
     final templateDir = cli.getTemplateFolder();
     expect(templateDir.existsSync(), isTrue);
     expect(templateDir.path, equals(expectedDirectory));
   });
 
   test('that given invalid template-folder argument will throw', () {
-    final cli = Cli([
-      '--template', 'php5.5',
-      '--template-folder', '/fooBar'
-    ]);
+    final cli = Cli(['--template', 'php5.5', '--template-folder', '/fooBar']);
     expect(() => cli.getTemplateFolder(), throwsA(TypeMatcher<Exception>()));
   });
 }

@@ -20,7 +20,8 @@ class Cli {
     ..addOption(argTemplate,
         defaultsTo: 'php5.5', help: 'code template folder for code generation')
     ..addOption(argTemplateFolder,
-        help: 'code template folder local path. Note that this option will overwrite ${argTemplate} option',
+        help:
+            'code template folder local path. Note that this option will overwrite ${argTemplate} option',
         valueHelp: 'directory')
     ..addOption(argOutputFolder,
         abbr: 'o',
@@ -60,7 +61,7 @@ class Cli {
 
   Directory getTemplateFolder() {
     Directory dir;
-    if(parsedArguments.wasParsed(argTemplateFolder)) {
+    if (parsedArguments.wasParsed(argTemplateFolder)) {
       dir = Directory(parsedArguments[argTemplateFolder]);
     } else {
       dir = _getTemplateFolderByTemplateArg();
@@ -78,7 +79,7 @@ class Cli {
     } else {
       root = File(Platform.script.path).parent.parent.absolute.path;
     }
-    
+
     final dir = Directory('${root}/templates/${parsedArguments[argTemplate]}');
     return dir;
   }
