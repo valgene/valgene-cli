@@ -9,3 +9,7 @@
 ## 1.0.1
 
 - implement openAPI default and allOf
+
+## 1.0.2
+
+- implement template-folder cli argument to give customized templates into the engine
