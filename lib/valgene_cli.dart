@@ -8,6 +8,7 @@ import 'package:yaml/yaml.dart';
 
 class Cli {
   static const argTemplate = 'template';
+  static const argTemplateFolder = 'template-folder';
   static const argOption = 'option';
   static const argSpecFile = 'spec';
   static const argOutputFolder = 'out';
@@ -18,6 +19,9 @@ class Cli {
         help: 'OpenAPI specification file .yaml', valueHelp: 'file')
     ..addOption(argTemplate,
         defaultsTo: 'php5.5', help: 'code template folder for code generation')
+    ..addOption(argTemplateFolder,
+        help: 'code template folder local path. Note that this option will overwrite ${argTemplate} option',
+        valueHelp: 'directory')
     ..addOption(argOutputFolder,
         abbr: 'o',
         defaultsTo: 'out',
@@ -44,7 +48,7 @@ class Cli {
   void execute() {
     final File spec = File(parsedArguments[argSpecFile]);
     final target = Directory(parsedArguments[argOutputFolder]);
-    final context = GeneratorContext(target, getOptions(), getTemplateDir());
+    final context = GeneratorContext(target, getOptions(), getTemplateFolder());
     final parser = OpenApiParser(context);
 
     spec.readAsString().then((String contents) {
@@ -54,18 +58,28 @@ class Cli {
     });
   }
 
-  Directory getTemplateDir() {
+  Directory getTemplateFolder() {
+    Directory dir;
+    if(parsedArguments.wasParsed(argTemplateFolder)) {
+      dir = Directory(parsedArguments[argTemplateFolder]);
+    } else {
+      dir = _getTemplateFolderByTemplateArg();
+    }
+    if (!dir.existsSync()) {
+      throw Exception('Template directory does not exist: ${dir.toString()}');
+    }
+    return dir;
+  }
+
+  Directory _getTemplateFolderByTemplateArg() {
     var root = '';
     if (Platform.script.scheme == 'data') {
       root = Directory.current.path;
     } else {
       root = File(Platform.script.path).parent.parent.absolute.path;
     }
-
+    
     final dir = Directory('${root}/templates/${parsedArguments[argTemplate]}');
-    if (!dir.existsSync()) {
-      throw Exception('Template directory does not exist: ${dir.toString()}');
-    }
     return dir;
   }
 

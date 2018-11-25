@@ -171,10 +171,16 @@ class NewPetDto
 }
 ```
 
-## Customization
+## Customization of Templates
 
 Be aware that the finally generated code is totally customizable and the shown example is very opinionated.
-You will find below further infos how to write your own templates. 
+To enable your custom Templates you copy the files from the [template folder](https://github.com/valgene/valgene-cli/tree/master/templates/php5.5) to a folder on you local disk. Then you can customize them and pass the path of the folder as an argument like:
+
+```bash
+valgene --template-folder $PWD/my-custom-php-templates --spec petstore-expanded.yaml --option 'php.namespace:\My\PetStore\Api'
+```
+
+Further reading of variables available in templates you can find [here](doc/templates.md)
 
 ## Installation
 
