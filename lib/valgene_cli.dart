@@ -7,18 +7,23 @@ import 'package:valgene_cli/parser.dart';
 import 'package:yaml/yaml.dart';
 
 class Cli {
+  static const argTemplate = 'template';
+  static const argOption = 'option';
+  static const argSpecFile = 'spec';
+  static const argOutputFolder = 'out';
+
   final Logger log = Logger('Cli');
   final ArgParser argParser = new ArgParser()
-    ..addOption('spec',
+    ..addOption(argSpecFile,
         help: 'OpenAPI specification file .yaml', valueHelp: 'file')
-    ..addOption('template',
+    ..addOption(argTemplate,
         defaultsTo: 'php5.5', help: 'code template folder for code generation')
-    ..addOption('out',
+    ..addOption(argOutputFolder,
         abbr: 'o',
         defaultsTo: 'out',
         help: 'target folder for the generated code',
         valueHelp: 'directory')
-    ..addMultiOption('option',
+    ..addMultiOption(argOption,
         help: 'add template specific options. multiple are allowed',
         valueHelp: 'scope.subcope:value');
 
@@ -31,15 +36,15 @@ class Cli {
   }
 
   bool isValid() {
-    return parsedArguments.wasParsed('spec');
+    return parsedArguments.wasParsed(argSpecFile);
   }
 
   void showUsage() => print(argParser.usage);
 
   void execute() {
-    final File spec = File(parsedArguments['spec']);
-    final target = Directory(parsedArguments['out']);
-    final context = GeneratorContext(target, getOptions(), _getTemplate());
+    final File spec = File(parsedArguments[argSpecFile]);
+    final target = Directory(parsedArguments[argOutputFolder]);
+    final context = GeneratorContext(target, getOptions(), getTemplateDir());
     final parser = OpenApiParser(context);
 
     spec.readAsString().then((String contents) {
@@ -49,27 +54,25 @@ class Cli {
     });
   }
 
-  void _setupLogging() {
-    Logger.root.level = Level.ALL;
-    Logger.root.onRecord.listen((LogRecord rec) {
-      print('${rec.message}');
-    });
-  }
-
-  Directory _getTemplate() {
+  Directory getTemplateDir() {
+    var root = '';
     if (Platform.script.scheme == 'data') {
-      throw Exception('unable to determine the template folder');
+      root = Directory.current.path;
+    } else {
+      root = File(Platform.script.path).parent.parent.absolute.path;
     }
-    final file = File(Platform.script.toFilePath());
 
-    return Directory(file.parent.parent.absolute.path +
-        '/templates/${parsedArguments['template']}');
+    final dir = Directory('${root}/templates/${parsedArguments[argTemplate]}');
+    if (!dir.existsSync()) {
+      throw Exception('Template directory does not exist: ${dir.toString()}');
+    }
+    return dir;
   }
 
   Map getOptions() {
     var options = [];
-    if (parsedArguments.wasParsed('option')) {
-      options = parsedArguments['option'];
+    if (parsedArguments.wasParsed(argOption)) {
+      options = parsedArguments[argOption];
     }
 
     Map map = {};
@@ -81,6 +84,13 @@ class Cli {
     });
 
     return map;
+  }
+
+  void _setupLogging() {
+    Logger.root.level = Level.ALL;
+    Logger.root.onRecord.listen((LogRecord rec) {
+      print('${rec.message}');
+    });
   }
 
   static Map _splitOption(String key, Map value, Map options) {

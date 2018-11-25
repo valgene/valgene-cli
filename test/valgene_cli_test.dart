@@ -27,4 +27,14 @@ void main() {
           }
         }));
   });
+
+  test('that given template argument resolved directory', () {
+    final cli = Cli(['--template', 'php5.5']);
+    expect(cli.getTemplateDir().existsSync(), isTrue);
+  });
+
+  test('that given invalid template dir will throw', () {
+    final cli = Cli(['--template', 'fooBarBak']);
+    expect(() => cli.getTemplateDir(), throwsA(TypeMatcher<Exception>()));
+  });
 }
