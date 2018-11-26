@@ -13,3 +13,7 @@
 ## 1.0.2
 
 - implement template-folder cli argument to give customized templates into the engine
+
+## 1.0.3
+
+- implement openAPI nullable on objects that plays well with default
