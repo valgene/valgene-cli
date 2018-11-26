@@ -153,7 +153,7 @@ class OpenApiParser {
     return type;
   }
 
-  Field visitFieldTypeDefinition(typeDef, name) {
+  Field visitFieldTypeDefinition(Map typeDef, name) {
     var typeName = typeDef['type'];
     final type = visitType(typeDef, name);
     if (type != null) {
@@ -171,7 +171,8 @@ class OpenApiParser {
         minimum: typeDef['minimum'],
         maximum: typeDef['maximum'],
         enumValues: typeDef['enum'],
-        defaultValue: typeDef['default']);
+        defaultValue: typeDef.containsKey('default') ? typeDef['default'] : NoDefault(),
+        nullable: typeDef['nullable'] ?? false);
 
     return field;
   }

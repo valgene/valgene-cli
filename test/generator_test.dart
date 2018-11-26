@@ -58,9 +58,51 @@ void main() {
       expect(a.isNumber, isTrue);
       expect(a.defaultValue, .6);
     });
+
+    test("null", () {
+      final a = FieldCodeArtifact(
+          Field(name: 'foo', type: OpenApiPrimitives.number, defaultValue: null));
+
+      expect(a.isNumber, isTrue);
+      expect(a.defaultValue, 'null');
+    });
+
+    test("NoDefault", () {
+      final a = FieldCodeArtifact(
+          Field(name: 'foo', type: OpenApiPrimitives.number, defaultValue: NoDefault()));
+
+      expect(a.isNumber, isTrue);
+      expect(a.defaultValue, TypeMatcher<NoDefault>());
+    });
+  });
+
+  group('FieldCodeArtifact.nullable', () {
+    test("default case", () {
+      final a = FieldCodeArtifact(Field(
+          name: 'foo', type: OpenApiPrimitives.string));
+
+      expect(a.isString, isTrue);
+      expect(a.isNullable, isFalse);
+    });
+    test("string", () {
+      final a = FieldCodeArtifact(Field(
+          name: 'foo', type: OpenApiPrimitives.string, nullable: true));
+
+      expect(a.isString, isTrue);
+      expect(a.isNullable, isTrue);
+    });
   });
 
   group('FieldCodeArtifact tests', () {
+    test("other members values", () {
+      final f = Field(name: 'foo', type: OpenApiPrimitives.integer);
+      final a = FieldCodeArtifact(f);
+
+      expect(a.validationMethodName, equals('isFooValid'));
+      expect(a.asConst, equals('PROPERTY_FOO'));
+      expect(a.asProperty, equals('foo'));
+    });
+
     test("integer", () {
       final f = Field(name: 'foo', type: OpenApiPrimitives.integer);
       final a = FieldCodeArtifact(f);
@@ -68,9 +110,6 @@ void main() {
       expect(a.isNumber, isTrue);
       expect(a.isString, isFalse);
       expect(a.isBoolean, isFalse);
-      expect(a.validationMethodName, equals('isFooValid'));
-      expect(a.asConst, equals('PROPERTY_FOO'));
-      expect(a.asProperty, equals('foo'));
     });
 
     test("boolean", () {

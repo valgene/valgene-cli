@@ -35,11 +35,21 @@ class {{ name }}DtoValidator
     protected function {{ validationMethodName }}($json, $isRequired)
     {
         $field = {{ name }}Dto::{{{ asConst }}};
-        if (!isset($json[$field]) && $isRequired) {
-            throw new MissingFieldException($field, $json);
+        if (!array_key_exists($field, $json)) {
+            if ($isRequired) {
+                throw new MissingFieldException($field, $json);
+            }
+        {{# hasDefault }}
+            $json[$field] = {{{ defaultValue }}};
+        {{/ hasDefault }}
         }
         $value = $json[$field];
 
+    {{# isNullable }}
+        if ($value === null) {
+            return; // nullable so that is ok
+        }
+    {{/ isNullable }}
     {{# isDto }}
         $v = new {{ field.type }}Validator();
         $v->validate($value);

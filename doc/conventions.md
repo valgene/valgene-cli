@@ -56,3 +56,21 @@ components:
 ```
 
 the `default` value `"someType"` will be assign to the `NewPetDto::tag` in case the field is is absent in the payload. 
+
+### nullable
+
+```yaml
+components:
+  schemas:
+    NewPet:
+      required:
+      - name
+      properties:
+        name:
+          type: string
+        tag:
+          type: string
+          nullable: true
+```
+
+`null` is allowed to be assign to the `NewPetDto::tag`. When the field in the payload is null then the further checks about data type and minimum will be skipped. Note that this can be combined with `default: null` to initialize the value. 

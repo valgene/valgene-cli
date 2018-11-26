@@ -40,7 +40,8 @@ class FieldCodeArtifact {
   bool isNumber = false;
   bool isBoolean = false;
   bool isDto = false;
-  bool get hasDefault => field.defaultValue != null;
+  bool get isNullable => field.nullable;
+  bool get hasDefault => !(field.defaultValue is NoDefault);
   dynamic get defaultValue => _toValue(field.defaultValue);
 
   FieldCodeArtifact(this.field) {
@@ -79,7 +80,25 @@ class FieldCodeArtifact {
         values.map((v) => _toValue(v)), '[', ']');
   }
 
-  _toValue(v) => isString ? "\"${v}\"" : v;
+  _toValue(v) {
+    if(isString) return StringValue(v).toString();
+    if(v == null) return NullValue().toString();
+    return v;
+  }
+}
+
+class NullValue {
+  @override
+  String toString() => 'null';
+}
+
+class StringValue {
+  final String value;
+
+  StringValue(this.value);
+
+  @override
+  String toString() => '"$value"';
 }
 
 class EndpointGenerator {

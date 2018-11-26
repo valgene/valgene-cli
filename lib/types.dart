@@ -24,8 +24,10 @@ class Field {
   final int maximum;
   final int minimum;
   final dynamic defaultValue;
+  final bool nullable;
   String type;
   bool isRequired;
+
 
   bool get hasMinLength => minLength != null;
   bool get hasMaxLength => maxLength != null;
@@ -44,7 +46,8 @@ class Field {
       enumValues: null,
       bool isRequired = false,
       String path = '/',
-      dynamic defaultValue = null})
+      dynamic defaultValue = null,
+        this.nullable = false})
       : name = name,
         type = type,
         format = format,
@@ -57,6 +60,8 @@ class Field {
         path = path,
         defaultValue = defaultValue;
 }
+
+class NoDefault { }
 
 class SchemaType {
   final String key;
