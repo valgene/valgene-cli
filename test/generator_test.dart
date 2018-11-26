@@ -41,6 +41,8 @@ void main() {
 
       expect(a.isString, isTrue);
       expect(a.defaultValue, equals('"Foo"'));
+      expect(a.hasDefault,
+          isTrue);
     });
 
     test("boolean", () {
@@ -49,6 +51,7 @@ void main() {
 
       expect(a.isBoolean, isTrue);
       expect(a.defaultValue, isFalse);
+      expect(a.hasDefault, isTrue);
     });
 
     test("float", () {
@@ -57,6 +60,7 @@ void main() {
 
       expect(a.isNumber, isTrue);
       expect(a.defaultValue, .6);
+      expect(a.hasDefault, isTrue);
     });
 
     test("null", () {
@@ -65,6 +69,7 @@ void main() {
 
       expect(a.isNumber, isTrue);
       expect(a.defaultValue, 'null');
+      expect(a.hasDefault, isTrue);
     });
 
     test("NoDefault", () {
@@ -75,6 +80,7 @@ void main() {
 
       expect(a.isNumber, isTrue);
       expect(a.defaultValue, TypeMatcher<NoDefault>());
+      expect(a.hasDefault, isFalse);
     });
   });
 
