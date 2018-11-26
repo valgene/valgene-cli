@@ -28,7 +28,6 @@ class Field {
   String type;
   bool isRequired;
 
-
   bool get hasMinLength => minLength != null;
   bool get hasMaxLength => maxLength != null;
   bool get hasMinimum => minimum != null;
@@ -47,7 +46,7 @@ class Field {
       bool isRequired = false,
       String path = '/',
       dynamic defaultValue = null,
-        this.nullable = false})
+      this.nullable = false})
       : name = name,
         type = type,
         format = format,
@@ -61,7 +60,7 @@ class Field {
         defaultValue = defaultValue;
 }
 
-class NoDefault { }
+class NoDefault {}
 
 class SchemaType {
   final String key;

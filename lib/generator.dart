@@ -81,8 +81,8 @@ class FieldCodeArtifact {
   }
 
   _toValue(v) {
-    if(isString) return StringValue(v).toString();
-    if(v == null) return NullValue().toString();
+    if (isString) return StringValue(v).toString();
+    if (v == null) return NullValue().toString();
     return v;
   }
 }

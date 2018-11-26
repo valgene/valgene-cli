@@ -60,16 +60,18 @@ void main() {
     });
 
     test("null", () {
-      final a = FieldCodeArtifact(
-          Field(name: 'foo', type: OpenApiPrimitives.number, defaultValue: null));
+      final a = FieldCodeArtifact(Field(
+          name: 'foo', type: OpenApiPrimitives.number, defaultValue: null));
 
       expect(a.isNumber, isTrue);
       expect(a.defaultValue, 'null');
     });
 
     test("NoDefault", () {
-      final a = FieldCodeArtifact(
-          Field(name: 'foo', type: OpenApiPrimitives.number, defaultValue: NoDefault()));
+      final a = FieldCodeArtifact(Field(
+          name: 'foo',
+          type: OpenApiPrimitives.number,
+          defaultValue: NoDefault()));
 
       expect(a.isNumber, isTrue);
       expect(a.defaultValue, TypeMatcher<NoDefault>());
@@ -78,15 +80,15 @@ void main() {
 
   group('FieldCodeArtifact.nullable', () {
     test("default case", () {
-      final a = FieldCodeArtifact(Field(
-          name: 'foo', type: OpenApiPrimitives.string));
+      final a =
+          FieldCodeArtifact(Field(name: 'foo', type: OpenApiPrimitives.string));
 
       expect(a.isString, isTrue);
       expect(a.isNullable, isFalse);
     });
     test("string", () {
-      final a = FieldCodeArtifact(Field(
-          name: 'foo', type: OpenApiPrimitives.string, nullable: true));
+      final a = FieldCodeArtifact(
+          Field(name: 'foo', type: OpenApiPrimitives.string, nullable: true));
 
       expect(a.isString, isTrue);
       expect(a.isNullable, isTrue);

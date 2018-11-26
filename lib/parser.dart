@@ -171,7 +171,8 @@ class OpenApiParser {
         minimum: typeDef['minimum'],
         maximum: typeDef['maximum'],
         enumValues: typeDef['enum'],
-        defaultValue: typeDef.containsKey('default') ? typeDef['default'] : NoDefault(),
+        defaultValue:
+            typeDef.containsKey('default') ? typeDef['default'] : NoDefault(),
         nullable: typeDef['nullable'] ?? false);
 
     return field;
