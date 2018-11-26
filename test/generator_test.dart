@@ -41,8 +41,7 @@ void main() {
 
       expect(a.isString, isTrue);
       expect(a.defaultValue, equals('"Foo"'));
-      expect(a.hasDefault,
-          isTrue);
+      expect(a.hasDefault, isTrue);
     });
 
     test("boolean", () {
