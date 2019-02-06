@@ -41,7 +41,11 @@ class {{ name }}Dto
     {{^ isContainer }}
       {{# fieldsToValidate }}
         {{# isDto }}
-        $self->{{{ asProperty }}} = {{ field.type }}::fromArray($payload[static::{{{ asConst }}}]);
+        if (!array_key_exists(static::{{{ asConst }}}, $payload)) {
+            $self->{{{ asProperty }}} = {{{ defaultValue }}};
+        } else {
+            $self->{{{ asProperty }}} = {{ field.type }}::fromArray($payload[static::{{{ asConst }}}]);
+        }
         {{/ isDto }}
         {{^ isDto }}
         {{# hasDefault }}
