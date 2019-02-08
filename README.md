@@ -70,18 +70,21 @@ valgene --template php5.5 --spec petstore-expanded.yaml --option 'php.namespace:
 > processing petstore-expanded.yaml:
   - route [POST]    /pets
 > generating:
-  - PostPets/MissingFieldException.php
-  - PostPets/NewPetDto.php
-  - PostPets/NewPetDtoValidator.php
-  - PostPets/FieldException.php
-  - PostPets/InvalidFieldException.php
+  - PostAddPet/NewPetDto.php
+  - PostAddPet/NewPetDtoValidator.php
+  - Exception/MissingFieldException.php
+  - Exception/FieldException.php
+  - Exception/InvalidFieldException.php
 ```
 
 Generated Validator looks like this:
 ```php
 <?php
 
-namespace \My\Sample\Api\PostPets;
+namespace \My\PetStore\Api\PostAddPet;
+
+use \My\PetStore\Api\Exception\InvalidFieldException;
+use \My\PetStore\Api\Exception\MissingFieldException;
 
 /**
  * GENERATED CODE - DO NOT MODIFY BY HAND
@@ -106,8 +109,10 @@ class NewPetDtoValidator
     protected function isNameValid($json, $isRequired)
     {
         $field = NewPetDto::PROPERTY_NAME;
-        if (!isset($json[$field]) && $isRequired) {
-            throw new MissingFieldException($field, $json);
+        if (!array_key_exists($field, $json)) {
+            if ($isRequired) {
+                throw new MissingFieldException($field, $json);
+            }
         }
         $value = $json[$field];
 
@@ -123,8 +128,10 @@ class NewPetDtoValidator
     protected function isTagValid($json, $isRequired)
     {
         $field = NewPetDto::PROPERTY_TAG;
-        if (!isset($json[$field]) && $isRequired) {
-            throw new MissingFieldException($field, $json);
+        if (!array_key_exists($field, $json)) {
+            if ($isRequired) {
+                throw new MissingFieldException($field, $json);
+            }
         }
         $value = $json[$field];
 

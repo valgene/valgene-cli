@@ -2,6 +2,9 @@
 
 {{# options.php.namespace }}
 namespace {{ _ }}\{{ endpoint }};
+
+use {{{ _ }}}\Exception\InvalidFieldException;
+use {{{ _ }}}\Exception\MissingFieldException;
 {{/ options.php.namespace }}
 
 /**

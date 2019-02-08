@@ -1,6 +1,7 @@
 DARTANALYZER_FLAGS=--fatal-warnings
+SOURCES=lib/*dart bin/*dart
 
-build: lib/*dart test/*dart bin/*dart deps checks
+build: ${SOURCES} test/*dart deps checks
 	pub run test_coverage
 
 deps: pubspec.yaml
@@ -19,3 +20,6 @@ build-local: reformatting build
 
 publish:
 	pub publish
+
+example: ${SOURCES} deps
+	valgene --template-folder ${PWD}/templates/php5.5 --spec example/petstore-expanded.yaml --option 'php.namespace:\My\PetStore\Api'

@@ -1,7 +1,7 @@
 <?php
 
 {{# options.php.namespace }}
-namespace {{ _ }}\{{ endpoint }};
+namespace {{ _ }}\Exception;
 {{/ options.php.namespace }}
 
 /**

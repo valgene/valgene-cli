@@ -164,9 +164,8 @@ class TypeGenerator {
   void _generateFiles() {
     context.templateFolder
         .list(recursive: true, followLinks: false)
-        .listen((FileSystemEntity entity) {
-      _generateFile(entity);
-    });
+        .where((e) => e is File)
+        .listen((FileSystemEntity entity) => _generateFile(entity));
   }
 
   void _generateArtifacts() {
@@ -175,16 +174,24 @@ class TypeGenerator {
     });
   }
 
-  void _generateFile(File templateFile) {
+  void _generateFile(FileSystemEntity templateFile) {
     final Map renderContext = createRenderContext();
-    final String filename =
-        sprintf(templateFile.uri.pathSegments.last, renderContext);
-    final String relativeTargetPath = '${context.endpoint}/${filename}';
+    final substitutedFilename = '/' +
+        templateFile.uri.pathSegments
+            .map((f) => sprintf(f, renderContext))
+            .join('/');
+    final templatePath = context.templateFolder.path + '/';
+    final relativeTargetPath =
+        substitutedFilename.replaceFirst(templatePath, '');
+
     if (generatedFiles.contains(relativeTargetPath)) {
       return;
     }
 
     final file = new File('${context.outputFolder.path}/${relativeTargetPath}');
+    if (!file.existsSync()) {
+      file.createSync(recursive: true);
+    }
     final sink = file.openWrite();
     final Template template = createTemplate(templateFile);
     renderTemplate(sink, template, renderContext);
