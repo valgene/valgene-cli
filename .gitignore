@@ -13,5 +13,6 @@ out/
 
 .DS_Store
 *.iml
+.idea/
 test/.test_coverage.dart
 coverage/
