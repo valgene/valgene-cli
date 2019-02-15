@@ -48,7 +48,7 @@ class FieldCodeArtifact {
     ReCase rc = ReCase(field.name);
     this.asConst = 'PROPERTY_${rc.constantCase}';
     this.asProperty = rc.camelCase;
-    this.validationMethodName = "is${rc.pascalCase}Valid";
+    this.validationMethodName = "is${rc.pascalCase}FieldValid";
     initDataType();
   }
 
