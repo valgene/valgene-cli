@@ -105,7 +105,7 @@ void main() {
       final f = Field(name: 'foo', type: OpenApiPrimitives.integer);
       final a = FieldCodeArtifact(f);
 
-      expect(a.validationMethodName, equals('isFooValid'));
+      expect(a.validationMethodName, equals('isFooFieldValid'));
       expect(a.asConst, equals('PROPERTY_FOO'));
       expect(a.asProperty, equals('foo'));
     });
