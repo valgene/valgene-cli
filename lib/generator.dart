@@ -142,11 +142,11 @@ class EndpointGenerator {
   }
 }
 
-/**
- * a TypeGenerator generates usually for a defined DataType in the API a:
- *  - Dto
- *  - DtoValidator
- */
+///
+/// a TypeGenerator generates usually for a defined DataType in the API a:
+///  - Dto
+/// - DtoValidator
+///
 class TypeGenerator {
   final EndpointGeneratorContext context;
   final SchemaType typeToGenerate;

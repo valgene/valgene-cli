@@ -94,7 +94,7 @@ class OpenApiParser {
     if (items.keys.contains('\$ref')) {
       container.innerType = visitRef(items);
     } else if (items.keys.contains('allOf')) {
-      SchemaType type = null;
+      SchemaType type;
       items['allOf'].forEach((value) {
         if (type == null) {
           type = visitRef(value);

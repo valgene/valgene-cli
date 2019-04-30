@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.7
+
+- minor changes that pana suggested
+- mockito upgrade
+
 ## 1.0.6
 
 - minor naming improvement for validation methods

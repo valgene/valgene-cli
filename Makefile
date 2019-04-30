@@ -15,6 +15,7 @@ reformatting:
 	dartfmt -w lib/ test/ bin/
 
 build-local: reformatting build
+	pana --source path . --scores --warning --verbosity compact
 	genhtml -o coverage coverage/lcov.info
 	open coverage/index.html
 
