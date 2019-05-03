@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.9
+
+- more robust validation of nullable values 
+
 ## 1.0.8
 
 - migrate to pedantic package for linting
