@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.8
+
+- migrate to pedantic package for linting
+- adding cli parameter version
+- adding cli parameter help
+- add exception handling on spec file loading, to show potential yaml parsing errors
+
 ## 1.0.7
 
 - minor changes that pana suggested

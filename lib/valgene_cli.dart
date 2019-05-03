@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:logging/logging.dart';
+import 'package:path/path.dart' as path;
 import 'package:valgene_cli/generator.dart';
 import 'package:valgene_cli/parser.dart';
 import 'package:yaml/yaml.dart';
@@ -12,9 +13,13 @@ class Cli {
   static const argOption = 'option';
   static const argSpecFile = 'spec';
   static const argOutputFolder = 'out';
+  static const argVersion = 'version';
+  static const argHelp = 'help';
 
   final Logger log = Logger('Cli');
   final ArgParser argParser = new ArgParser()
+    ..addFlag(argVersion, help: 'shows the version', negatable: false)
+    ..addFlag(argHelp, help: 'shows the usage help', negatable: false)
     ..addOption(argSpecFile,
         help: 'OpenAPI specification file .yaml', valueHelp: 'file')
     ..addOption(argTemplate,
@@ -40,23 +45,42 @@ class Cli {
     _setupLogging();
   }
 
-  bool isValid() {
-    return parsedArguments.wasParsed(argSpecFile);
-  }
+  bool isValid() => parsedArguments.wasParsed(argSpecFile);
 
-  void showUsage() => print(argParser.usage);
+  void execute() async {
+    if (!parsedArguments.wasParsed(argSpecFile)) {
+      if (parsedArguments.wasParsed(argVersion)) {
+        showVersion();
+        return;
+      }
+      showUsage();
+      return;
+    }
 
-  void execute() {
     final File spec = File(parsedArguments[argSpecFile]);
     final target = Directory(parsedArguments[argOutputFolder]);
     final context = GeneratorContext(target, getOptions(), getTemplateFolder());
     final parser = OpenApiParser(context);
 
-    spec.readAsString().then((String contents) {
-      final schema = loadYaml(contents);
+    try {
+      final schema = loadYaml(await spec.readAsString());
       log.info('> processing ${spec.uri.pathSegments.last}:');
       parser.execute(schema);
-    });
+    } catch (e) {
+      log.warning('Failed to process the spec file. ' + e.toString());
+    }
+  }
+
+  void showUsage() => log.info(argParser.usage);
+
+  void showVersion() async {
+    var packageFolder = packagePath();
+    try {
+      File versionFile = new File(path.join(packageFolder, 'pubspec.yaml'));
+      log.info(loadYaml(await versionFile.readAsString())['version']);
+    } catch (e) {
+      log.warning('Failed to load the version information. ' + e.toString());
+    }
   }
 
   Directory getTemplateFolder() {
@@ -77,12 +101,15 @@ class Cli {
     if (Platform.script.scheme == 'data') {
       root = Directory.current.path;
     } else {
-      root = File(Platform.script.path).parent.parent.absolute.path;
+      root = packagePath();
     }
 
     final dir = Directory('${root}/templates/${parsedArguments[argTemplate]}');
     return dir;
   }
+
+  String packagePath() =>
+      File(Platform.script.path).parent.parent.absolute.path;
 
   Map getOptions() {
     var options = [];
