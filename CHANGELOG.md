@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.10
+
+- small improvement on DTO Validator template
+
 ## 1.0.9
 
 - more robust validation of nullable values 

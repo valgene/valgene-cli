@@ -38,8 +38,12 @@ class {{ name }}DtoValidator
     protected function {{ validationMethodName }}($json, $isRequired)
     {
         $field = {{ name }}Dto::{{{ asConst }}};
-        if($isRequired && !is_array($json)) {
-            throw new MissingFieldException($field, $json);
+        if (!is_array($json)) {
+            if ($isRequired) {
+                throw new MissingFieldException($field, $json);
+            }
+
+            return;
         }
         if (!array_key_exists($field, $json)) {
             if ($isRequired) {
