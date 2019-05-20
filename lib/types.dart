@@ -60,8 +60,6 @@ class Field {
         defaultValue = defaultValue;
 }
 
-class NoDefault {}
-
 class SchemaType {
   final String key;
   final String name;
@@ -104,3 +102,5 @@ class ContainerType implements SchemaType {
   @override
   Field getField(String name) => _innerType.getField(name);
 }
+
+class NoDefaultValue {}

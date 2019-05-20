@@ -44,6 +44,15 @@ void main() {
       expect(a.hasDefault, isTrue);
     });
 
+    test("string type with default value of null", () {
+      final a = FieldCodeArtifact(Field(
+          name: 'foo', type: OpenApiPrimitives.string, defaultValue: 'null'));
+
+      expect(a.isString, isTrue);
+      expect(a.defaultValue.toString(), equals('null'));
+      expect(a.hasDefault, isTrue);
+    });
+
     test("boolean", () {
       final a = FieldCodeArtifact(Field(
           name: 'foo', type: OpenApiPrimitives.boolean, defaultValue: false));
@@ -75,10 +84,10 @@ void main() {
       final a = FieldCodeArtifact(Field(
           name: 'foo',
           type: OpenApiPrimitives.number,
-          defaultValue: NoDefault()));
+          defaultValue: NoDefaultValue()));
 
       expect(a.isNumber, isTrue);
-      expect(a.defaultValue, TypeMatcher<NoDefault>());
+      expect(a.defaultValue, TypeMatcher<NoDefaultValue>());
       expect(a.hasDefault, isFalse);
     });
   });

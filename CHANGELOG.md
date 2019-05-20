@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.11
+
+- fixed #7 strings with default value null came out as "null" 
+
 ## 1.0.10
 
 - small improvement on DTO Validator template

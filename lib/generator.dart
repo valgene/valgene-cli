@@ -41,7 +41,7 @@ class FieldCodeArtifact {
   bool isBoolean = false;
   bool isDto = false;
   bool get isNullable => field.nullable;
-  bool get hasDefault => !(field.defaultValue is NoDefault);
+  bool get hasDefault => !(field.defaultValue is NoDefaultValue);
   dynamic get defaultValue => _toValue(field.defaultValue);
 
   FieldCodeArtifact(this.field) {
@@ -81,10 +81,13 @@ class FieldCodeArtifact {
   }
 
   _toValue(v) {
+    if (isNull(v)) return NullValue().toString();
     if (isString) return StringValue(v).toString();
-    if (v == null) return NullValue().toString();
     return v;
   }
+
+  static bool isNull(v) =>
+      v == null || v.toString().toLowerCase() == NullValue().toString();
 }
 
 class NullValue {
